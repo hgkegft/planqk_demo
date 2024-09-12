@@ -84,10 +84,23 @@ def train(
     params["problem_type"] = problem_type
 
     client = PlanqkServiceClient(service_endpoint, consumer_key, consumer_secret)
+    logger.info("Starting execution of the service...")
     job = client.start_execution(data=data, params=params)
-    # result = client.get_result(job.id)
 
-    result = {"result": ""}
+    count = 0
+    while True:
+        try:
+            count += 1
+            logger.info(f"{count:03d}Check job status...")
+            client.wait_for_final_state(job.id)
+            logger.info(f"{count:03d}...Found result!")
+            result = client.get_result(job.id)
+            break
+        except Exception as e:
+            if count >= 60:
+                logger.info(f"{count:03d}...Found no result...stop.")
+                result = {"result": None}
+                break
 
     return result, data, params
 
