@@ -1,1 +1,2 @@
-# planqk_demo
+# A PlanQK Demo Example using Gradio
+

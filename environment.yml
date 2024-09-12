@@ -1,0 +1,8 @@
+name: demo-starter-gradio
+channels:
+  - conda-forge
+dependencies:
+  - python>=3.6,<3.10
+  - pip>=21
+  - pip:
+      - -r requirements.txt
