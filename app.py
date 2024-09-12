@@ -51,6 +51,11 @@ def train(
         mode,
         time_budget,
 ):
+
+    print(consumer_key)
+    print(consumer_secret)
+    print(service_endpoint)
+
     file_path = data_file.name
     with open(file_path) as f:
         data = json.load(f)
