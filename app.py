@@ -12,10 +12,7 @@ logger.info("Starting Gradio Demo")
 
 consumer_key = os.getenv("CONSUMER_KEY", None)
 consumer_secret = os.getenv("CONSUMER_SECRET", None)
-service_endpoint = os.getenv(
-    "SERVICE_ENDPOINT",
-    "https://gateway.platform.planqk.de/anaqor/quantum-random-number-generator/1.0.0",
-)
+service_endpoint = os.getenv("SERVICE_ENDPOINT", None)
 
 title = "A PlanQK Demo using Gradio!"
 description = '<div align="center"> <h1>A descriptive description!</h1> </div>'
@@ -45,14 +42,14 @@ def upload_json_file(file):
 
 
 def train(
-    data_file,
-    regression_choice,
-    rescaling_choice,
-    encoding_choice,
-    dim_reduction,
-    problem_type,
-    mode,
-    time_budget,
+        data_file,
+        regression_choice,
+        rescaling_choice,
+        encoding_choice,
+        dim_reduction,
+        problem_type,
+        mode,
+        time_budget,
 ):
     file_path = data_file.name
     with open(file_path) as f:
@@ -81,6 +78,8 @@ def train(
     job = client.start_execution(data=data, params=params)
     result = client.get_result(job.id)
 
+    result = {"result": ""}
+
     return result, data, params
 
 
@@ -90,7 +89,7 @@ with gr.Blocks(title=title) as demo:
         with gr.Row():
             with gr.Column():
                 regression_choice = gr.Dropdown(
-                    label="Regression", choices=["svr", "qsvr"]
+                    label="Regression", choices=["svr", "qsvr"], value="qsvr",
                 )
                 rescaling_choice = gr.Dropdown(
                     label="Rescaling",
@@ -100,16 +99,18 @@ with gr.Blocks(title=title) as demo:
                         "min_max_scaling",
                         "no-op",
                     ],
+                    value="standard_scaling",
                 )
                 encoding_choice = gr.Dropdown(
-                    label="Encoding", choices=["categorical", "one-hot", "no-op"]
+                    label="Encoding", choices=["categorical", "one-hot", "no-op"], value="one-hot"
                 )
                 dim_reduction = gr.Dropdown(
-                    label="Dimension reduction", choices=["pca", "autoencoder"]
+                    label="Dimension reduction", choices=["pca", "autoencoder"], value="autoencoder"
                 )
             with gr.Column():
                 time_budget = gr.Number(label="Time budget(seconds)", value=60)
-                problem_type = gr.Dropdown(label="Problem type", choices=["classification", "regression"])
+                problem_type = gr.Dropdown(label="Problem type", choices=["classification", "regression"],
+                                           value="regression")
 
                 data_file = gr.File()
                 upload_button = gr.UploadButton(
