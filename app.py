@@ -85,7 +85,7 @@ def train(
 
     client = PlanqkServiceClient(service_endpoint, consumer_key, consumer_secret)
     job = client.start_execution(data=data, params=params)
-    result = client.get_result(job.id)
+    # result = client.get_result(job.id)
 
     result = {"result": ""}
 
