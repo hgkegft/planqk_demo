@@ -64,8 +64,12 @@ def train(
         "autoqml_lib.search_space.regression.RegressionChoice__choice": regression_choice,
         "autoqml_lib.search_space.preprocessing.rescaling.RescalingChoice__choice": rescaling_choice,
         "autoqml_lib.search_space.preprocessing.encoding.EncoderChoice__choice": encoding_choice,
+        'autoqml_lib.search_space.preprocessing.encoding.one_hot.OneHotEncoder__max_categories': 17,
+        'autoqml_lib.search_space.preprocessing.encoding.one_hot.OneHotEncoder__min_frequency': 1,
+        'autoqml_lib.search_space.data_cleaning.imputation.ImputationChoice__choice': 'no-op',
         "autoqml_lib.search_space.preprocessing.dim_reduction.DimReductionChoice__choice": dim_reduction,
         "autoqml_lib.search_space.preprocessing.dim_reduction.autoencoder.Autoencoder__latent_dim": 10,
+        'autoqml_lib.search_space.preprocessing.downsampling.DownsamplingChoice__choice': 'no-op',
     }
 
     params = dict()
