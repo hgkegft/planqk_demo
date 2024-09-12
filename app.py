@@ -90,7 +90,7 @@ with gr.Blocks(title=title) as demo:
         with gr.Row():
             with gr.Column():
                 regression_choice = gr.Dropdown(
-                    label="Regression", choices=["classic:svr", "qc:qsvr"]
+                    label="Regression", choices=["svr", "qsvr"]
                 )
                 rescaling_choice = gr.Dropdown(
                     label="Rescaling",
