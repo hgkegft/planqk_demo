@@ -5,6 +5,7 @@ import sys
 import gradio as gr
 from loguru import logger
 from planqk.service.client import PlanqkServiceClient
+from planqk.service.sdk import JobStatus
 
 logging_level = os.environ.get("LOG_LEVEL", "DEBUG")
 logger.configure(handlers=[{"sink": sys.stdout, "level": logging_level}])
@@ -91,14 +92,19 @@ def train(
     while True:
         try:
             count += 1
-            logger.info(f"{count:03d}Check job status...")
-            client.wait_for_final_state(job.id)
-            logger.info(f"{count:03d}...Found result!")
+            logger.info(f"{count:03d} | Check job status...")
+            status = client.get_status(job.id)
+            logger.info(f"{count:03d} | Status: {status}")
+            status = status == JobStatus.SUCCEEDED or status == JobStatus.FAILED or status == JobStatus.CANCELLED
+            assert status
+            logger.info(f"{count:03d} | ...Found result!")
             result = client.get_result(job.id)
             break
         except Exception as e:
+            intermediate_result = client.get_interim_results(job.id)
+            logger.info(f"{count:03d} | intermediate result: {intermediate_result}")
             if count >= 60:
-                logger.info(f"{count:03d}...Found no result...stop.")
+                logger.info(f"{count:03d} | ...Found no result...stop.")
                 result = {"result": None}
                 break
 
