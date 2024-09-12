@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import time
 
 import gradio as gr
 from loguru import logger
@@ -11,9 +12,9 @@ logging_level = os.environ.get("LOG_LEVEL", "DEBUG")
 logger.configure(handlers=[{"sink": sys.stdout, "level": logging_level}])
 logger.info("Starting Gradio Demo")
 
-consumer_key = os.getenv("CONSUMER_KEY", None)
-consumer_secret = os.getenv("CONSUMER_SECRET", None)
-service_endpoint = os.getenv("SERVICE_ENDPOINT", None)
+consumer_key = os.getenv("CONSUMER_KEY", "QuAIhJULrDtOu62HMsjCih8QL0oa")
+consumer_secret = os.getenv("CONSUMER_SECRET", "sBdY25szBMZ6IevOIq1J3FH39w0a")
+service_endpoint = os.getenv("SERVICE_ENDPOINT", "https://gateway.platform.planqk.de/418f4736-0ed9-46cf-8e09-68a16dada3bc/planqk-autoqml-5n7r5/1.0.0")
 
 title = "A PlanQK Demo using Gradio!"
 description = '<div align="center"> <h1>A descriptive description!</h1> </div>'
@@ -52,7 +53,6 @@ def train(
         mode,
         time_budget,
 ):
-    # try:
     file_path = data_file.name
     with open(file_path) as f:
         data = json.load(f)
@@ -84,37 +84,22 @@ def train(
     logger.info("Starting execution of the service...")
     job = client.start_execution(data=data, params=params)
 
+    timeout = 25
+    sleep = 5
     count = 0
     while True:
         try:
             count += 1
-            logger.info(f"{count:03d} | Check job status...")
-            job = client.get_status(job.id)
-            logger.info(f"{count:03d} | Status: {job.status}")
-            status = (job.status == JobStatus.SUCCEEDED or
-                      job.status == JobStatus.FAILED or
-                      job.status == JobStatus.CANCELLED)
-            logger.info(f"{count:03d} | Status: {status}")
-            assert status
+            client.wait_for_final_state(job.id, timeout=timeout, wait=sleep)
             logger.info(f"{count:03d} | ...Found result!")
             result = client.get_result(job.id)
             break
         except Exception as e:
             logger.info(f"{e}")
-            intermediate_result = client.get_interim_results(job.id)
-            logger.info(f"{count:03d} | intermediate result: {intermediate_result}")
-            if count >= 60:
+            if count >= int(600 / timeout):
                 logger.info(f"{count:03d} | ...Found no result...stop.")
+                result = {"result": None}
                 break
-    # except Exception as e:
-    #     logger.info(f"{e}")
-    #     result = {"result": None}
-    #     data = {"data": None}
-    #     params = {"params": None}
-
-    result = {"result": None}
-    data = {"data": None}
-    params = {"params": None}
 
     return result, data, params
 
