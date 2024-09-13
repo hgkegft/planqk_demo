@@ -114,11 +114,40 @@ def train(
         mode,
         time_budget,
 ):
-    time.sleep(60)
+    file_path = data_file.name
+    with open(file_path) as f:
+        data = json.load(f)
 
-    result = {"result": None}
-    data = {"result": None}
-    params = {"result": None}
+    keys = ["X_train", "y_train"]
+    for key in keys:
+        if key not in data.keys():
+            raise Exception("Mandatory key: {key} not in JSON file.")
+
+    custom_config = {
+        "autoqml_lib.search_space.regression.RegressionChoice__choice": regression_choice,
+        "autoqml_lib.search_space.preprocessing.rescaling.RescalingChoice__choice": rescaling_choice,
+        "autoqml_lib.search_space.preprocessing.encoding.EncoderChoice__choice": encoding_choice,
+        'autoqml_lib.search_space.preprocessing.encoding.one_hot.OneHotEncoder__max_categories': 17,
+        'autoqml_lib.search_space.preprocessing.encoding.one_hot.OneHotEncoder__min_frequency': 1,
+        'autoqml_lib.search_space.data_cleaning.imputation.ImputationChoice__choice': 'no-op',
+        "autoqml_lib.search_space.preprocessing.dim_reduction.DimReductionChoice__choice": dim_reduction,
+        "autoqml_lib.search_space.preprocessing.dim_reduction.autoencoder.Autoencoder__latent_dim": 10,
+        'autoqml_lib.search_space.preprocessing.downsampling.DownsamplingChoice__choice': 'no-op',
+    }
+
+    params = dict()
+    params["custom_config"] = custom_config
+    params["mode"] = mode
+    params["time_budget_for_this_task"] = time_budget
+    params["problem_type"] = problem_type
+
+    client = PlanqkServiceClient(service_endpoint, consumer_key, consumer_secret)
+    logger.info("Starting execution of the service...")
+    job = client.start_execution(data=data, params=params)
+
+    result = {"result": job.id}
+    data = {"data": job.id}
+    params = {"params": job.id}
 
     return result, data, params
 
