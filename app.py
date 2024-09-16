@@ -43,67 +43,6 @@ def upload_json_file(file):
     return file_path, data
 
 
-# def train(
-#         data_file,
-#         regression_choice,
-#         rescaling_choice,
-#         encoding_choice,
-#         dim_reduction,
-#         problem_type,
-#         mode,
-#         time_budget,
-# ):
-#     file_path = data_file.name
-#     with open(file_path) as f:
-#         data = json.load(f)
-#
-#     keys = ["X_train", "y_train"]
-#     for key in keys:
-#         if key not in data.keys():
-#             raise Exception("Mandatory key: {key} not in JSON file.")
-#
-#     custom_config = {
-#         "autoqml_lib.search_space.regression.RegressionChoice__choice": regression_choice,
-#         "autoqml_lib.search_space.preprocessing.rescaling.RescalingChoice__choice": rescaling_choice,
-#         "autoqml_lib.search_space.preprocessing.encoding.EncoderChoice__choice": encoding_choice,
-#         'autoqml_lib.search_space.preprocessing.encoding.one_hot.OneHotEncoder__max_categories': 17,
-#         'autoqml_lib.search_space.preprocessing.encoding.one_hot.OneHotEncoder__min_frequency': 1,
-#         'autoqml_lib.search_space.data_cleaning.imputation.ImputationChoice__choice': 'no-op',
-#         "autoqml_lib.search_space.preprocessing.dim_reduction.DimReductionChoice__choice": dim_reduction,
-#         "autoqml_lib.search_space.preprocessing.dim_reduction.autoencoder.Autoencoder__latent_dim": 10,
-#         'autoqml_lib.search_space.preprocessing.downsampling.DownsamplingChoice__choice': 'no-op',
-#     }
-#
-#     params = dict()
-#     params["custom_config"] = custom_config
-#     params["mode"] = mode
-#     params["time_budget_for_this_task"] = time_budget
-#     params["problem_type"] = problem_type
-#
-#     client = PlanqkServiceClient(service_endpoint, consumer_key, consumer_secret)
-#     logger.info("Starting execution of the service...")
-#     job = client.start_execution(data=data, params=params)
-#
-#     timeout = 25
-#     sleep = 5
-#     count = 0
-#     while True:
-#         try:
-#             count += 1
-#             client.wait_for_final_state(job.id, timeout=timeout, wait=sleep)
-#             logger.info(f"{count:03d} | ...Found result!")
-#             result = client.get_result(job.id)
-#             break
-#         except Exception as e:
-#             logger.info(f"{e}")
-#             if count >= int(600 / timeout):
-#                 logger.info(f"{count:03d} | ...Found no result...stop.")
-#                 result = {"result": None}
-#                 break
-#
-#     return result, data, params
-
-
 def train(
         data_file,
         regression_choice,
@@ -145,9 +84,22 @@ def train(
     logger.info("Starting execution of the service...")
     job = client.start_execution(data=data, params=params)
 
-    result = {"result": job.id}
-    data = {"data": job.id}
-    params = {"params": job.id}
+    timeout = 25
+    sleep = 5
+    count = 0
+    while True:
+        try:
+            count += 1
+            client.wait_for_final_state(job.id, timeout=timeout, wait=sleep)
+            logger.info(f"{count:03d} | ...Found result!")
+            result = client.get_result(job.id)
+            break
+        except Exception as e:
+            logger.info(f"{e}")
+            if count >= int(600 / timeout):
+                logger.info(f"{count:03d} | ...Found no result...stop.")
+                result = {"result": None}
+                break
 
     return result, data, params
 
