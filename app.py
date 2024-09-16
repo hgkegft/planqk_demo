@@ -49,6 +49,7 @@ def train(
         rescaling_choice,
         encoding_choice,
         dim_reduction,
+        n_reduction_dims,
         problem_type,
         mode,
         time_budget,
@@ -70,7 +71,7 @@ def train(
         'autoqml_lib.search_space.preprocessing.encoding.one_hot.OneHotEncoder__min_frequency': 1,
         'autoqml_lib.search_space.data_cleaning.imputation.ImputationChoice__choice': 'no-op',
         "autoqml_lib.search_space.preprocessing.dim_reduction.DimReductionChoice__choice": dim_reduction,
-        "autoqml_lib.search_space.preprocessing.dim_reduction.autoencoder.Autoencoder__latent_dim": 10,
+        "autoqml_lib.search_space.preprocessing.dim_reduction.autoencoder.Autoencoder__latent_dim": n_reduction_dims,
         'autoqml_lib.search_space.preprocessing.downsampling.DownsamplingChoice__choice': 'no-op',
     }
 
@@ -128,6 +129,9 @@ with gr.Blocks(title=title) as demo:
                 dim_reduction = gr.Dropdown(
                     label="Dimension reduction", choices=["pca", "autoencoder"], value="autoencoder"
                 )
+                n_reduction_dims = gr.Number(
+                    label="Reduction dims", value=5
+                )
             with gr.Column():
                 time_budget = gr.Number(label="Time budget(seconds)", value=60)
                 problem_type = gr.Dropdown(label="Problem type", choices=["classification", "regression"],
@@ -173,6 +177,7 @@ with gr.Blocks(title=title) as demo:
                     rescaling_choice,
                     encoding_choice,
                     dim_reduction,
+                    n_reduction_dims,
                     problem_type,
                     mode,
                     time_budget,
