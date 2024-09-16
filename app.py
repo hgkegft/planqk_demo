@@ -183,4 +183,5 @@ with gr.Blocks(title=title) as demo:
     with gr.Tab("Prediction"):
         ...
 
+demo.queue()
 demo.launch()
