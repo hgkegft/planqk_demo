@@ -1,111 +1,23 @@
-import json
 import os
 import sys
-import time
 
 import gradio as gr
+
 from loguru import logger
-from planqk.service.client import PlanqkServiceClient
-from planqk.service.sdk import JobStatus
+from lib import (
+    train,
+    upload_json_file,
+    predict,
+    create_train_data_and_params,
+    create_predict_data_and_params,
+)
 
 logging_level = os.environ.get("LOG_LEVEL", "DEBUG")
 logger.configure(handlers=[{"sink": sys.stdout, "level": logging_level}])
 logger.info("Starting Gradio Demo")
 
-consumer_key = os.getenv("CONSUMER_KEY", None)
-consumer_secret = os.getenv("CONSUMER_SECRET", None)
-service_endpoint = os.getenv("SERVICE_ENDPOINT", None)
-
 title = "A PlanQK Demo using Gradio!"
 description = '<div align="center"> <h1>A descriptive description!</h1> </div>'
-
-
-def upload_json_file(file):
-    file_path = file.name
-    parts = file_path.split("/")
-    filename = parts[-1]
-    parts = filename.split(".")
-    if len(parts) < 2:
-        raise Exception("File name is not long enough.")
-
-    file_extension = parts[-1]
-    if file_extension not in ["json"]:
-        raise Exception("File name is not a JSON file.")
-
-    with open(file_path) as f:
-        data = json.load(f)
-
-    keys = ["X_train", "y_train"]
-    for key in keys:
-        if key not in data.keys():
-            raise Exception("Mandatory key: {key} not in JSON file.")
-
-    return file_path, data
-
-
-def train(
-        data_file,
-        regression_choice,
-        rescaling_choice,
-        encoding_choice,
-        dim_reduction,
-        n_reduction_dims,
-        problem_type,
-        mode,
-        time_budget,
-):
-    file_path = data_file.name
-    with open(file_path) as f:
-        data = json.load(f)
-
-    keys = ["X_train", "y_train"]
-    for key in keys:
-        if key not in data.keys():
-            raise Exception("Mandatory key: {key} not in JSON file.")
-
-    custom_config = {
-        "autoqml_lib.search_space.regression.RegressionChoice__choice": regression_choice,
-        "autoqml_lib.search_space.preprocessing.rescaling.RescalingChoice__choice": rescaling_choice,
-        "autoqml_lib.search_space.preprocessing.encoding.EncoderChoice__choice": encoding_choice,
-        'autoqml_lib.search_space.preprocessing.encoding.one_hot.OneHotEncoder__max_categories': 17,
-        'autoqml_lib.search_space.preprocessing.encoding.one_hot.OneHotEncoder__min_frequency': 1,
-        'autoqml_lib.search_space.data_cleaning.imputation.ImputationChoice__choice': 'no-op',
-        "autoqml_lib.search_space.preprocessing.dim_reduction.DimReductionChoice__choice": dim_reduction,
-        "autoqml_lib.search_space.preprocessing.dim_reduction.autoencoder.Autoencoder__latent_dim": int(n_reduction_dims),
-        'autoqml_lib.search_space.preprocessing.downsampling.DownsamplingChoice__choice': 'no-op',
-    }
-
-    params = dict()
-    params["custom_config"] = custom_config
-    params["mode"] = mode
-    params["time_budget_for_this_task"] = int(time_budget)
-    params["problem_type"] = problem_type
-
-    logger.info(params)
-
-    client = PlanqkServiceClient(service_endpoint, consumer_key, consumer_secret)
-    logger.info("Starting execution of the service...")
-    job = client.start_execution(data=data, params=params)
-
-    timeout = 25
-    sleep = 5
-    count = 0
-    while True:
-        try:
-            count += 1
-            client.wait_for_final_state(job.id, timeout=timeout, wait=sleep)
-            logger.info(f"{count:03d} | ...Found result!")
-            result = client.get_result(job.id)
-            break
-        except Exception as e:
-            logger.info(f"{e}")
-            if count >= int(600 / timeout):
-                logger.info(f"{count:03d} | ...Found no result...stop.")
-                result = {"result": None}
-                break
-
-    return result, data, params
-
 
 with gr.Blocks(title=title, theme=gr.themes.Soft()) as demo:
     gr.Markdown(description)
@@ -113,7 +25,9 @@ with gr.Blocks(title=title, theme=gr.themes.Soft()) as demo:
         with gr.Row():
             with gr.Column():
                 regression_choice = gr.Dropdown(
-                    label="Regression", choices=["svr", "qsvr"], value="qsvr",
+                    label="Regression",
+                    choices=["svr", "qsvr"],
+                    value="qsvr",
                 )
                 rescaling_choice = gr.Dropdown(
                     label="Rescaling",
@@ -126,22 +40,27 @@ with gr.Blocks(title=title, theme=gr.themes.Soft()) as demo:
                     value="standard_scaling",
                 )
                 encoding_choice = gr.Dropdown(
-                    label="Encoding", choices=["categorical", "one-hot", "no-op"], value="one-hot"
+                    label="Encoding",
+                    choices=["categorical", "one-hot", "no-op"],
+                    value="one-hot",
                 )
                 dim_reduction = gr.Dropdown(
-                    label="Dimension reduction", choices=["pca", "autoencoder"], value="autoencoder"
+                    label="Dimension reduction",
+                    choices=["pca", "autoencoder"],
+                    value="autoencoder",
                 )
-                n_reduction_dims = gr.Number(
-                    label="Reduction dims", value=5
-                )
+                n_reduction_dims = gr.Number(label="Reduction dims", value=5)
             with gr.Column():
                 time_budget = gr.Number(label="Time budget(seconds)", value=60)
-                problem_type = gr.Dropdown(label="Problem type", choices=["classification", "regression"],
-                                           value="regression")
+                problem_type = gr.Dropdown(
+                    label="Problem type",
+                    choices=["classification", "regression"],
+                    value="regression",
+                )
 
-                data_file = gr.File()
+                train_data_file = gr.File()
                 upload_button = gr.UploadButton(
-                    "Click to Upload a File",
+                    "Click to upload a file",
                     file_types=["text"],
                     file_count="single",
                 )
@@ -149,7 +68,7 @@ with gr.Blocks(title=title, theme=gr.themes.Soft()) as demo:
                     data_json_box = gr.JSON()
 
                 upload_button.upload(
-                    upload_json_file, upload_button, [data_file, data_json_box]
+                    upload_json_file, upload_button, [train_data_file, data_json_box]
                 )
 
         with gr.Row():
@@ -162,19 +81,23 @@ with gr.Blocks(title=title, theme=gr.themes.Soft()) as demo:
             with gr.Column():
                 ...
 
-        with gr.Accordion("Inspect Data", open=False):
+        with gr.Accordion("Inspect data", open=False):
             with gr.Row():
-                send_data_json_box = gr.JSON()
-                send_params_json_box = gr.JSON()
+                gr.Markdown("Data", scale=3)
+                gr.Markdown("Params", scale=4)
+            with gr.Row():
+                send_data_json_box = gr.JSON(scale=3)
+                send_params_json_box = gr.JSON(scale=4)
 
         with gr.Column():
-            result_json_box = gr.JSON()
+            with gr.Accordion("Result", open=False):
+                result_json_box_train = gr.JSON()
 
             mode = gr.Text("train", visible=False)
             train_button.click(
                 train,
                 inputs=[
-                    data_file,
+                    train_data_file,
                     regression_choice,
                     rescaling_choice,
                     encoding_choice,
@@ -184,11 +107,99 @@ with gr.Blocks(title=title, theme=gr.themes.Soft()) as demo:
                     mode,
                     time_budget,
                 ],
-                outputs=[result_json_box, send_data_json_box, send_params_json_box],
+                outputs=[result_json_box_train],
                 api_name="train",
             )
+            gr.on(
+                [train_button.click],
+                create_train_data_and_params,
+                inputs=[
+                    train_data_file,
+                    regression_choice,
+                    rescaling_choice,
+                    encoding_choice,
+                    dim_reduction,
+                    n_reduction_dims,
+                    problem_type,
+                    mode,
+                    time_budget,
+                ],
+                outputs=[
+                    send_params_json_box,
+                    send_data_json_box,
+                ],
+            )
     with gr.Tab("Prediction"):
-        ...
+        with gr.Accordion("Result data", open=False):
+            result_json_box_train_output = gr.JSON()
+            gr.on(
+                [result_json_box_train.change],
+                lambda value: value,
+                inputs=[result_json_box_train],
+                outputs=[result_json_box_train_output],
+            )
+
+        gr.Markdown(value="Specify data")
+
+        predict_data_file = gr.File()
+        upload_button = gr.UploadButton(
+            "Click to upload a file",
+            file_types=["text"],
+            file_count="single",
+        )
+        with gr.Accordion("Inspect Data", open=False):
+            data_json_box = gr.JSON()
+
+        upload_button.upload(
+            upload_json_file, upload_button, [predict_data_file, data_json_box]
+        )
+
+        with gr.Row():
+            with gr.Column():
+                predict_button = gr.Button(value="Predict")
+            with gr.Column():
+                ...
+            with gr.Column():
+                ...
+            with gr.Column():
+                ...
+
+        with gr.Accordion("Inspect data", open=False):
+            with gr.Row():
+                gr.Markdown("Data", scale=3)
+                gr.Markdown("Params", scale=4)
+            with gr.Row():
+                send_data_json_box = gr.JSON(scale=3)
+                send_params_json_box = gr.JSON(scale=4)
+
+        with gr.Column():
+            with gr.Accordion("Result", open=False):
+                result_json_box_predict = gr.JSON()
+
+            mode = gr.Text("predict", visible=False)
+            predict_button.click(
+                predict,
+                inputs=[
+                    predict_data_file,
+                    result_json_box_train_output,
+                    mode,
+                ],
+                outputs=[result_json_box_predict],
+                api_name="predict",
+            )
+            gr.on(
+                [train_button.click],
+                create_predict_data_and_params,
+                inputs=[
+                    predict_data_file,
+                    result_json_box_train_output,
+                    mode,
+                ],
+                outputs=[
+                    send_params_json_box,
+                    send_data_json_box,
+                ],
+            )
 
 demo.queue()
 demo.launch()
