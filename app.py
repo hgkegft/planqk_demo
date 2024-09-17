@@ -71,15 +71,17 @@ def train(
         'autoqml_lib.search_space.preprocessing.encoding.one_hot.OneHotEncoder__min_frequency': 1,
         'autoqml_lib.search_space.data_cleaning.imputation.ImputationChoice__choice': 'no-op',
         "autoqml_lib.search_space.preprocessing.dim_reduction.DimReductionChoice__choice": dim_reduction,
-        "autoqml_lib.search_space.preprocessing.dim_reduction.autoencoder.Autoencoder__latent_dim": n_reduction_dims,
+        "autoqml_lib.search_space.preprocessing.dim_reduction.autoencoder.Autoencoder__latent_dim": int(n_reduction_dims),
         'autoqml_lib.search_space.preprocessing.downsampling.DownsamplingChoice__choice': 'no-op',
     }
 
     params = dict()
     params["custom_config"] = custom_config
     params["mode"] = mode
-    params["time_budget_for_this_task"] = time_budget
+    params["time_budget_for_this_task"] = int(time_budget)
     params["problem_type"] = problem_type
+
+    logger.info(params)
 
     client = PlanqkServiceClient(service_endpoint, consumer_key, consumer_secret)
     logger.info("Starting execution of the service...")
