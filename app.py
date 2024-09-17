@@ -107,7 +107,7 @@ def train(
     return result, data, params
 
 
-with gr.Blocks(title=title) as demo:
+with gr.Blocks(title=title, theme=gr.themes.Soft()) as demo:
     gr.Markdown(description)
     with gr.Tab("Training"):
         with gr.Row():
