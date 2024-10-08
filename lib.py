@@ -1,14 +1,13 @@
 import os
 import json
 
-import gradio as gr
-
 from loguru import logger
 from planqk.service.client import PlanqkServiceClient
 
-consumer_key = os.getenv("CONSUMER_KEY", None)
-consumer_secret = os.getenv("CONSUMER_SECRET", None)
-service_endpoint = os.getenv("SERVICE_ENDPOINT", None)
+consumer_key = os.getenv("CONSUMER_KEY", "QuAIhJULrDtOu62HMsjCih8QL0oa")
+consumer_secret = os.getenv("CONSUMER_SECRET", "sBdY25szBMZ6IevOIq1J3FH39w0a")
+service_endpoint = os.getenv("SERVICE_ENDPOINT",
+                             "https://gateway.platform.planqk.de/418f4736-0ed9-46cf-8e09-68a16dada3bc/planqk-autoqml-d3g4l/1.0.0")
 
 
 def upload_json_file(file):
@@ -35,12 +34,15 @@ def execute_on_planqk(data=None, params=None, data_ref=None):
     client = PlanqkServiceClient(service_endpoint, consumer_key, consumer_secret)
     logger.info("Starting execution of the service...")
 
-    if data is None:
-        job = client.start_execution(params=params, data_ref=data_ref)
-    elif data_ref is None:
-        job = client.start_execution(data=data, params=params)
-    else:
-        raise Exception("Either one of data or data_ref should be defined.")
+    # if data is None:
+    #     job = client.start_execution(params=params, data_ref=data_ref)
+    # elif data_ref is None:
+    #     job = client.start_execution(data=data, params=params)
+    #     job = client.start_execution(data=data, params=params, data_ref=data_ref)
+    # else:
+    #     raise Exception("Either one of data or data_ref should be defined.")
+
+    job = client.start_execution(data=data, params=params, data_ref=data_ref)
 
     MAX_TIME = 600
     timeout = 25
@@ -99,8 +101,8 @@ def train(
     params["problem_type"] = problem_type
 
     if is_reference_data == "Yes":
-        data = None
         data_ref = data
+        data = None
     else:
         data_ref = None
 
@@ -119,8 +121,8 @@ def predict(data_file, is_reference_data, result_json_box_train_output, mode):
     params["model_as_string_base64"] = result_json_box_train_output["result"]
 
     if is_reference_data == "Yes":
-        data = None
         data_ref = data
+        data = None
     else:
         data_ref = None
 
@@ -164,7 +166,7 @@ def create_train_data_and_params(
     params["time_budget_for_this_task"] = int(time_budget)
     params["problem_type"] = problem_type
 
-    return params, data, params
+    return params, data
 
 
 def create_predict_data_and_params(data_file, result_json_box_train_output, mode):
@@ -176,4 +178,4 @@ def create_predict_data_and_params(data_file, result_json_box_train_output, mode
     params["mode"] = mode
     params["model_as_string_base64"] = result_json_box_train_output["result"]
 
-    return params
+    return params, data

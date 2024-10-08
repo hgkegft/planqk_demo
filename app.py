@@ -197,7 +197,7 @@ with gr.Blocks(title=title, theme=gr.themes.Soft()) as demo:
                 api_name="predict",
             )
             gr.on(
-                [train_button.click],
+                [predict_button.click],
                 create_predict_data_and_params,
                 inputs=[
                     predict_data_file,
