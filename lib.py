@@ -29,12 +29,13 @@ def upload_json_file(file):
     return file_path, data
 
 
-def execute_on_planqk(data, params):
+def execute_on_planqk(data=None, params=None, data_ref=None):
     logger.info(params)
 
     client = PlanqkServiceClient(service_endpoint, consumer_key, consumer_secret)
     logger.info("Starting execution of the service...")
-    job = client.start_execution(data=data, params=params)
+
+    job = client.start_execution(data=data, params=params, data_ref=data_ref)
 
     MAX_TIME = 600
     timeout = 25
@@ -58,6 +59,7 @@ def execute_on_planqk(data, params):
 
 def train(
         data_file,
+        is_reference_data,
         regression_choice,
         rescaling_choice,
         encoding_choice,
@@ -70,11 +72,6 @@ def train(
     file_path = data_file.name
     with open(file_path) as f:
         data = json.load(f)
-
-    # keys = ["X_train", "y_train"]
-    # for key in keys:
-    #     if key not in data.keys():
-    #         raise Exception("Mandatory key: {key} not in JSON file.")
 
     custom_config = {
         "autoqml_lib.search_space.regression.RegressionChoice__choice": regression_choice,
@@ -96,7 +93,13 @@ def train(
     params["time_budget_for_this_task"] = int(time_budget)
     params["problem_type"] = problem_type
 
-    result = execute_on_planqk(data, params)
+    if is_reference_data:
+        data = None
+        data_ref = data
+    else:
+        data_ref = None
+
+    result = execute_on_planqk(data, params, data_ref)
 
     return result
 

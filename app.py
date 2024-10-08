@@ -57,19 +57,36 @@ with gr.Blocks(title=title, theme=gr.themes.Soft()) as demo:
                     choices=["classification", "regression"],
                     value="regression",
                 )
+                with gr.Tab("Data per Request"):
+                    is_reference_data = False
 
-                train_data_file = gr.File()
-                upload_button = gr.UploadButton(
-                    "Click to upload a file",
-                    file_types=["text"],
-                    file_count="single",
-                )
-                with gr.Accordion("Inspect Data", open=False):
-                    data_json_box = gr.JSON()
+                    train_data_file = gr.File()
+                    upload_button = gr.UploadButton(
+                        "Click to upload a file",
+                        file_types=["text"],
+                        file_count="single",
+                    )
+                    with gr.Accordion("Inspect Data", open=False):
+                        data_json_box = gr.JSON()
 
-                upload_button.upload(
-                    upload_json_file, upload_button, [train_data_file, data_json_box]
-                )
+                    upload_button.upload(
+                        upload_json_file, upload_button, [train_data_file, data_json_box]
+                    )
+                with gr.Tab("Data per Reference"):
+                    is_reference_data = True
+
+                    train_data_file = gr.File()
+                    upload_button = gr.UploadButton(
+                        "Click to upload a file",
+                        file_types=["text"],
+                        file_count="single",
+                    )
+                    with gr.Accordion("Inspect Data", open=False):
+                        data_json_box = gr.JSON()
+
+                    upload_button.upload(
+                        upload_json_file, upload_button, [train_data_file, data_json_box]
+                    )
 
         with gr.Row():
             with gr.Column():
@@ -98,6 +115,7 @@ with gr.Blocks(title=title, theme=gr.themes.Soft()) as demo:
                 train,
                 inputs=[
                     train_data_file,
+                    is_reference_data,
                     regression_choice,
                     rescaling_choice,
                     encoding_choice,
