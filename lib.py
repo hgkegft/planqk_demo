@@ -93,7 +93,7 @@ def train(
     params["time_budget_for_this_task"] = int(time_budget)
     params["problem_type"] = problem_type
 
-    if is_reference_data:
+    if is_reference_data == "Yes":
         data = None
         data_ref = data
     else:
@@ -113,7 +113,7 @@ def predict(data_file, is_reference_data, result_json_box_train_output, mode):
     params["mode"] = mode
     params["model_as_string_base64"] = result_json_box_train_output["result"]
 
-    if is_reference_data:
+    if is_reference_data == "Yes":
         data = None
         data_ref = data
     else:

@@ -59,12 +59,11 @@ with gr.Blocks(title=title, theme=gr.themes.Soft()) as demo:
                 )
 
                 # Specify data per reference or per request
-                data_usage = gr.Dropdown(
+                is_reference_data = gr.Dropdown(
                     label="Use Reference data?",
                     choices=["Yes", "No"],
                     value="No",
                 )
-                is_reference_data = True if data_usage == "Yes" else False
 
                 train_data_file = gr.File()
                 upload_button = gr.UploadButton(
@@ -190,6 +189,7 @@ with gr.Blocks(title=title, theme=gr.themes.Soft()) as demo:
                 predict,
                 inputs=[
                     predict_data_file,
+                    is_reference_data,
                     result_json_box_train_output,
                     mode,
                 ],
@@ -201,7 +201,6 @@ with gr.Blocks(title=title, theme=gr.themes.Soft()) as demo:
                 create_predict_data_and_params,
                 inputs=[
                     predict_data_file,
-                    is_reference_data,
                     result_json_box_train_output,
                     mode,
                 ],
