@@ -104,21 +104,22 @@ def train(
     return result
 
 
-def predict(data_file, result_json_box_train_output, mode):
+def predict(data_file, is_reference_data, result_json_box_train_output, mode):
     file_path = data_file.name
     with open(file_path) as f:
         data = json.load(f)
-
-    # keys = ["X_test", "y_test"]
-    # for key in keys:
-    #     if key not in data.keys():
-    #         raise Exception("Mandatory key: {key} not in JSON file.")
 
     params = dict()
     params["mode"] = mode
     params["model_as_string_base64"] = result_json_box_train_output["result"]
 
-    result = execute_on_planqk(data, params)
+    if is_reference_data:
+        data = None
+        data_ref = data
+    else:
+        data_ref = None
+
+    result = execute_on_planqk(data, params, data_ref)
 
     return result
 
@@ -137,11 +138,6 @@ def create_train_data_and_params(
     file_path = data_file.name
     with open(file_path) as f:
         data = json.load(f)
-
-    keys = ["X_train", "y_train"]
-    for key in keys:
-        if key not in data.keys():
-            raise Exception("Mandatory key: {key} not in JSON file.")
 
     custom_config = {
         "autoqml_lib.search_space.regression.RegressionChoice__choice": regression_choice,
@@ -170,11 +166,6 @@ def create_predict_data_and_params(data_file, result_json_box_train_output, mode
     file_path = data_file.name
     with open(file_path) as f:
         data = json.load(f)
-
-    keys = ["X_test", "y_test"]
-    for key in keys:
-        if key not in data.keys():
-            raise Exception("Mandatory key: {key} not in JSON file.")
 
     params = dict()
     params["mode"] = mode
