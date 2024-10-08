@@ -35,7 +35,12 @@ def execute_on_planqk(data=None, params=None, data_ref=None):
     client = PlanqkServiceClient(service_endpoint, consumer_key, consumer_secret)
     logger.info("Starting execution of the service...")
 
-    job = client.start_execution(data=data, params=params, data_ref=data_ref)
+    if data is None:
+        job = client.start_execution(params=params, data_ref=data_ref)
+    elif data_ref is None:
+        job = client.start_execution(data=data, params=params)
+    else:
+        raise Exception("Either one of data or data_ref should be defined.")
 
     MAX_TIME = 600
     timeout = 25
