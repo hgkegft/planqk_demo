@@ -4,10 +4,9 @@ import json
 from loguru import logger
 from planqk.service.client import PlanqkServiceClient
 
-consumer_key = os.getenv("CONSUMER_KEY", "QuAIhJULrDtOu62HMsjCih8QL0oa")
-consumer_secret = os.getenv("CONSUMER_SECRET", "sBdY25szBMZ6IevOIq1J3FH39w0a")
-service_endpoint = os.getenv("SERVICE_ENDPOINT",
-                             "https://gateway.platform.planqk.de/418f4736-0ed9-46cf-8e09-68a16dada3bc/planqk-autoqml-d3g4l/1.0.0")
+consumer_key = os.getenv("CONSUMER_KEY", None)
+consumer_secret = os.getenv("CONSUMER_SECRET", None)
+service_endpoint = os.getenv("SERVICE_ENDPOINT", None)
 
 
 def upload_json_file(file):
