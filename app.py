@@ -10,7 +10,7 @@ from lib import (
     create_predict_data_and_params,
     ref_identifier
 )
-from train import train_trigger, create_train_data_and_params
+#from train import train_trigger, create_train_data_and_params
 
 
 logging_level = os.environ.get("LOG_LEVEL", "DEBUG")
@@ -110,43 +110,43 @@ with gr.Blocks(title=title, theme=gr.themes.Soft()) as demo:
                 result_json_box_train = gr.JSON()
 
         mode = gr.Text("train", visible=False)
-        train_button.click(
-            train_trigger,
-            inputs=[
-                regression_choice,
-                rescaling_choice,
-                encoding_choice,
-                dim_reduction,
-                n_reduction_dims,
-                problem_type,
-                mode,
-                time_budget,
-                train_data_file,
-                dataset_reference,
-            ],
-            outputs=[result_json_box_train],
-            api_name="train",
-        )
-        gr.on(
-            [train_button.click],
-            create_train_data_and_params,
-            inputs=[
-                regression_choice,
-                rescaling_choice,
-                encoding_choice,
-                dim_reduction,
-                n_reduction_dims,
-                problem_type,
-                mode,
-                time_budget,
-                train_data_file,
-                dataset_reference,
-            ],
-            outputs=[
-                send_params_json_box,
-                send_data_json_box,
-            ],
-        )
+        # train_button.click(
+        #     train_trigger,
+        #     inputs=[
+        #         regression_choice,
+        #         rescaling_choice,
+        #         encoding_choice,
+        #         dim_reduction,
+        #         n_reduction_dims,
+        #         problem_type,
+        #         mode,
+        #         time_budget,
+        #         train_data_file,
+        #         dataset_reference,
+        #     ],
+        #     outputs=[result_json_box_train],
+        #     api_name="train",
+        # )
+        # gr.on(
+        #     [train_button.click],
+        #     create_train_data_and_params,
+        #     inputs=[
+        #         regression_choice,
+        #         rescaling_choice,
+        #         encoding_choice,
+        #         dim_reduction,
+        #         n_reduction_dims,
+        #         problem_type,
+        #         mode,
+        #         time_budget,
+        #         train_data_file,
+        #         dataset_reference,
+        #     ],
+        #     outputs=[
+        #         send_params_json_box,
+        #         send_data_json_box,
+        #     ],
+        # )
     with gr.Tab("Prediction"):
         with gr.Accordion("Result data", open=False):
             result_json_box_train_output = gr.JSON()
