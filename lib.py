@@ -4,6 +4,7 @@ import json
 from loguru import logger
 from planqk.service.client import PlanqkServiceClient
 
+
 ref_datasets = dict()
 ref_datasets["Zeppelin"] = {
     "dataPoolId": "b9db3d59-164f-4ae4-a42e-e4f4f331cf33",
@@ -14,12 +15,14 @@ ref_datasets["KEB"] = None
 ref_datasets["IAV"] = None
 ref_datasets["Trumpf"] = None
 
+
 ref_identifier = []
 for key, value in ref_datasets.items():
     if value is not None:
         ref_identifier.append(key)
     else:
         ref_identifier.append(f"{key} - Not available.")
+
 
 consumer_key = os.getenv("CONSUMER_KEY", None)
 consumer_secret = os.getenv("CONSUMER_SECRET", None)
