@@ -21,4 +21,4 @@ with gr.Blocks(title=title, theme=gr.themes.Soft()) as demo:
     prediction_ui(result_json_box_train)
 
 demo.queue()
-demo.launch()
+demo.launch(share=True)
