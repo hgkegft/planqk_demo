@@ -1,6 +1,6 @@
 import json
 
-from lib import ref_datasets, execute_on_planqk
+from lib import ref_datasets, execute_on_planqk, execute_with_reference_data
 
 
 def train_trigger(
@@ -37,9 +37,9 @@ def train_trigger(
 
     if data_file is None:
         data_ref = ref_datasets[data_ref_identifier]
-        return train_with_reference_data(data_ref, params)
+        return execute_with_reference_data(data_ref, params)
     elif data_ref_identifier is None:
-        return train_with_upload_data(data_file, params)
+        return execute_with_reference_data(data_file, params)
 
 
 def train_with_upload_data(

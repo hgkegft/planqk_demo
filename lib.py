@@ -74,34 +74,21 @@ def execute_on_planqk(data=None, params=None, data_ref=None):
                 break
     return result
 
-
-def predict(data_file, is_reference_data, result_json_box_train_output, mode):
+def execute_with_upload_data(
+        data_file,
+        params
+):
     file_path = data_file.name
     with open(file_path) as f:
         data = json.load(f)
 
-    params = dict()
-    params["mode"] = mode
-    params["model_as_string_base64"] = result_json_box_train_output["result"]
-
-    if is_reference_data == "Yes":
-        data_ref = data
-        data = None
-    else:
-        data_ref = None
-
-    result = execute_on_planqk(data, params, data_ref)
+    result = execute_on_planqk(data, params, data_ref=None)
 
     return result
 
 
-def create_predict_data_and_params(data_file, result_json_box_train_output, mode):
-    file_path = data_file.name
-    with open(file_path) as f:
-        data = json.load(f)
-
-    params = dict()
-    params["mode"] = mode
-    params["model_as_string_base64"] = result_json_box_train_output["result"]
-
-    return params, data
+def execute_with_reference_data(
+        data_ref,
+        params
+):
+    return execute_on_planqk(data=None, params=params, data_ref=data_ref)

@@ -6,21 +6,17 @@ import gradio as gr
 from loguru import logger
 from lib import (
     upload_json_file,
-    predict,
-    create_predict_data_and_params,
     ref_identifier
 )
+from predict import create_predict_data_and_params, predict_trigger
 from train import train_trigger, create_train_data_and_params
-
 
 logging_level = os.environ.get("LOG_LEVEL", "DEBUG")
 logger.configure(handlers=[{"sink": sys.stdout, "level": logging_level}])
 logger.info("Starting Gradio Demo")
 
-
 title = "A PlanQK Demo using Gradio!"
 description = '<div align="center"> <h1>A descriptive description!</h1> </div>'
-
 
 with gr.Blocks(title=title, theme=gr.themes.Soft()) as demo:
     gr.Markdown(description)
@@ -58,7 +54,7 @@ with gr.Blocks(title=title, theme=gr.themes.Soft()) as demo:
                     )
                     n_reduction_dims = gr.Number(label="Reduction dims", value=5)
                 with gr.Accordion("General", open=False):
-                    time_budget = gr.Number(label="Time budget(seconds)", value=60)
+                    time_budget = gr.Number(label="Time budget(seconds)", value=5)
                     problem_type = gr.Dropdown(
                         label="Problem type",
                         choices=["classification", "regression"],
@@ -159,18 +155,22 @@ with gr.Blocks(title=title, theme=gr.themes.Soft()) as demo:
 
         gr.Markdown(value="Specify data")
 
-        predict_data_file = gr.File()
-        upload_button = gr.UploadButton(
-            "Click to upload a file",
-            file_types=["text"],
-            file_count="single",
-        )
-        with gr.Accordion("Inspect Data", open=False):
-            data_json_box = gr.JSON()
+        with gr.Row():
+            with gr.Column():
+                predict_data_file = gr.File()
+                upload_button = gr.UploadButton(
+                    "Click to upload a file",
+                    file_types=["text"],
+                    file_count="single",
+                )
+                with gr.Accordion("Inspect Data", open=False):
+                    data_json_box = gr.JSON()
 
-        upload_button.upload(
-            upload_json_file, upload_button, [predict_data_file, data_json_box]
-        )
+                upload_button.upload(
+                    upload_json_file, upload_button, [predict_data_file, data_json_box]
+                )
+            with gr.Column():
+                ...
 
         with gr.Row():
             with gr.Column():
@@ -196,12 +196,12 @@ with gr.Blocks(title=title, theme=gr.themes.Soft()) as demo:
 
             mode = gr.Text("predict", visible=False)
             predict_button.click(
-                predict,
+                predict_trigger,
                 inputs=[
-                    predict_data_file,
-                    is_reference_data,
                     result_json_box_train_output,
                     mode,
+                    predict_data_file,
+                    dataset_reference
                 ],
                 outputs=[result_json_box_predict],
                 api_name="predict",
@@ -210,9 +210,10 @@ with gr.Blocks(title=title, theme=gr.themes.Soft()) as demo:
                 [predict_button.click],
                 create_predict_data_and_params,
                 inputs=[
-                    predict_data_file,
                     result_json_box_train_output,
                     mode,
+                    predict_data_file,
+                    dataset_reference
                 ],
                 outputs=[
                     send_params_json_box,
