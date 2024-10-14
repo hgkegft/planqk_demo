@@ -10,7 +10,7 @@ from lib import (
     create_predict_data_and_params,
     ref_identifier
 )
-from train import train, create_train_data_and_params
+from train import train_trigger, create_train_data_and_params
 
 
 logging_level = os.environ.get("LOG_LEVEL", "DEBUG")
@@ -111,7 +111,7 @@ with gr.Blocks(title=title, theme=gr.themes.Soft()) as demo:
 
         mode = gr.Text("train", visible=False)
         train_button.click(
-            train,
+            train_trigger,
             inputs=[
                 regression_choice,
                 rescaling_choice,

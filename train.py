@@ -3,7 +3,7 @@ import json
 from lib import ref_datasets, execute_on_planqk
 
 
-def train(
+def train_trigger(
         regression_choice,
         rescaling_choice,
         encoding_choice,
