@@ -4,6 +4,23 @@ import json
 from loguru import logger
 from planqk.service.client import PlanqkServiceClient
 
+ref_datasets = dict()
+ref_datasets["Zeppelin"] = {
+    "dataPoolId": "b9db3d59-164f-4ae4-a42e-e4f4f331cf33",
+    "dataSourceDescriptorId": "0772df64-ecac-462d-9967-62a4816de2ae",
+    "fileId": "e540e51c-561c-4628-af37-45bb88ab2abe"
+}
+ref_datasets["KEB"] = None
+ref_datasets["IAV"] = None
+ref_datasets["Trumpf"] = None
+
+ref_identifier = []
+for key, value in ref_datasets.items():
+    if value is not None:
+        ref_identifier.append(key)
+    else:
+        ref_identifier.append(f"{key} - Not available.")
+
 consumer_key = os.getenv("CONSUMER_KEY", None)
 consumer_secret = os.getenv("CONSUMER_SECRET", None)
 service_endpoint = os.getenv("SERVICE_ENDPOINT", None)
@@ -33,14 +50,6 @@ def execute_on_planqk(data=None, params=None, data_ref=None):
     client = PlanqkServiceClient(service_endpoint, consumer_key, consumer_secret)
     logger.info("Starting execution of the service...")
 
-    # if data is None:
-    #     job = client.start_execution(params=params, data_ref=data_ref)
-    # elif data_ref is None:
-    #     job = client.start_execution(data=data, params=params)
-    #     job = client.start_execution(data=data, params=params, data_ref=data_ref)
-    # else:
-    #     raise Exception("Either one of data or data_ref should be defined.")
-
     job = client.start_execution(data=data, params=params, data_ref=data_ref)
 
     MAX_TIME = 600
@@ -63,53 +72,6 @@ def execute_on_planqk(data=None, params=None, data_ref=None):
     return result
 
 
-def train(
-        data_file,
-        is_reference_data,
-        regression_choice,
-        rescaling_choice,
-        encoding_choice,
-        dim_reduction,
-        n_reduction_dims,
-        problem_type,
-        mode,
-        time_budget,
-):
-    file_path = data_file.name
-    with open(file_path) as f:
-        data = json.load(f)
-
-    custom_config = {
-        "autoqml_lib.search_space.regression.RegressionChoice__choice": regression_choice,
-        "autoqml_lib.search_space.preprocessing.rescaling.RescalingChoice__choice": rescaling_choice,
-        "autoqml_lib.search_space.preprocessing.encoding.EncoderChoice__choice": encoding_choice,
-        "autoqml_lib.search_space.preprocessing.encoding.one_hot.OneHotEncoder__max_categories": 17,
-        "autoqml_lib.search_space.preprocessing.encoding.one_hot.OneHotEncoder__min_frequency": 1,
-        "autoqml_lib.search_space.data_cleaning.imputation.ImputationChoice__choice": "no-op",
-        "autoqml_lib.search_space.preprocessing.dim_reduction.DimReductionChoice__choice": dim_reduction,
-        "autoqml_lib.search_space.preprocessing.dim_reduction.autoencoder.Autoencoder__latent_dim": int(
-            n_reduction_dims
-        ),
-        "autoqml_lib.search_space.preprocessing.downsampling.DownsamplingChoice__choice": "no-op",
-    }
-
-    params = dict()
-    params["custom_config"] = custom_config
-    params["mode"] = mode
-    params["time_budget_for_this_task"] = int(time_budget)
-    params["problem_type"] = problem_type
-
-    if is_reference_data == "Yes":
-        data_ref = data
-        data = None
-    else:
-        data_ref = None
-
-    result = execute_on_planqk(data, params, data_ref)
-
-    return result
-
-
 def predict(data_file, is_reference_data, result_json_box_train_output, mode):
     file_path = data_file.name
     with open(file_path) as f:
@@ -128,44 +90,6 @@ def predict(data_file, is_reference_data, result_json_box_train_output, mode):
     result = execute_on_planqk(data, params, data_ref)
 
     return result
-
-
-def create_train_data_and_params(
-        data_file,
-        regression_choice,
-        rescaling_choice,
-        encoding_choice,
-        dim_reduction,
-        n_reduction_dims,
-        problem_type,
-        mode,
-        time_budget,
-):
-    file_path = data_file.name
-    with open(file_path) as f:
-        data = json.load(f)
-
-    custom_config = {
-        "autoqml_lib.search_space.regression.RegressionChoice__choice": regression_choice,
-        "autoqml_lib.search_space.preprocessing.rescaling.RescalingChoice__choice": rescaling_choice,
-        "autoqml_lib.search_space.preprocessing.encoding.EncoderChoice__choice": encoding_choice,
-        "autoqml_lib.search_space.preprocessing.encoding.one_hot.OneHotEncoder__max_categories": 17,
-        "autoqml_lib.search_space.preprocessing.encoding.one_hot.OneHotEncoder__min_frequency": 1,
-        "autoqml_lib.search_space.data_cleaning.imputation.ImputationChoice__choice": "no-op",
-        "autoqml_lib.search_space.preprocessing.dim_reduction.DimReductionChoice__choice": dim_reduction,
-        "autoqml_lib.search_space.preprocessing.dim_reduction.autoencoder.Autoencoder__latent_dim": int(
-            n_reduction_dims
-        ),
-        "autoqml_lib.search_space.preprocessing.downsampling.DownsamplingChoice__choice": "no-op",
-    }
-
-    params = dict()
-    params["custom_config"] = custom_config
-    params["mode"] = mode
-    params["time_budget_for_this_task"] = int(time_budget)
-    params["problem_type"] = problem_type
-
-    return params, data
 
 
 def create_predict_data_and_params(data_file, result_json_box_train_output, mode):
