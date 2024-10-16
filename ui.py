@@ -49,8 +49,8 @@ def get_config_elements():
             choices=["categorical", "one-hot", "no-op"],
             value="one-hot",
         )
-        one_hot_min_frequency = gr.Number(label="One-Hot Min Frequency", minimum=1, value=1, maximum=2**16)
-        one_hot_max_categories = gr.Number(label="One-Hot Max categories", minimum=1, value=1, maximum=2**16)
+        one_hot_min_frequency = gr.Number(label="One-Hot Min Frequency", minimum=1, value=10, maximum=2**16)
+        one_hot_max_categories = gr.Number(label="One-Hot Max categories", minimum=1, value=10, maximum=2**16)
     with gr.Accordion("Rescaling", open=False):
         ...
     with gr.Accordion("Down sampling", open=False):
