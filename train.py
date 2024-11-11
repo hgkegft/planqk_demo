@@ -39,7 +39,8 @@ def train_trigger(
     }
 
     params = dict()
-    params["custom_config"] = custom_config
+    # params["custom_config"] = custom_config
+    params["custom_config"] = {}
     params["mode"] = mode
     params["time_budget_for_this_task"] = int(time_budget)
     params["problem_type"] = problem_type
