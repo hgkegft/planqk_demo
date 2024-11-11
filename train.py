@@ -21,26 +21,54 @@ def train_trigger(
         data_ref_identifier=None,
         data_pool_reference=None,
 ):
+    # custom_config = {
+    #     "autoqml_lib.search_space.regression.RegressionChoice__choice": regression_choice,
+    #     "autoqml_lib.search_space.classification.ClassificationChoice__choice": classification_choice,
+    #     "autoqml_lib.search_space.preprocessing.rescaling.RescalingChoice__choice": rescaling_choice,
+    #     "autoqml_lib.search_space.preprocessing.rescaling.min_max_scaling.MinMaxScaling.__feature_range": rescaling_min_max_feature_range,
+    #     "autoqml_lib.search_space.preprocessing.rescaling.normalization.Normalization.__norm": rescaling_normalization_norm,
+    #     "autoqml_lib.search_space.preprocessing.encoding.EncoderChoice__choice": encoding_choice,
+    #     "autoqml_lib.search_space.preprocessing.encoding.one_hot.OneHotEncoder__max_categories": one_hot_max_categories,
+    #     "autoqml_lib.search_space.preprocessing.encoding.one_hot.OneHotEncoder__min_frequency": one_hot_min_frequency,
+    #     "autoqml_lib.search_space.data_cleaning.imputation.ImputationChoice__choice": "no-op",
+    #     "autoqml_lib.search_space.preprocessing.dim_reduction.DimReductionChoice__choice": dim_reduction,
+    #     "autoqml_lib.search_space.preprocessing.dim_reduction.autoencoder.Autoencoder__latent_dim": int(
+    #         n_reduction_dims
+    #     ),
+    #     "autoqml_lib.search_space.preprocessing.downsampling.DownsamplingChoice__choice": "no-op",
+    # }
+
     custom_config = {
-        "autoqml_lib.search_space.regression.RegressionChoice__choice": regression_choice,
-        "autoqml_lib.search_space.classification.ClassificationChoice__choice": classification_choice,
-        "autoqml_lib.search_space.preprocessing.rescaling.RescalingChoice__choice": rescaling_choice,
-        "autoqml_lib.search_space.preprocessing.rescaling.min_max_scaling.MinMaxScaling.__feature_range": rescaling_min_max_feature_range,
-        "autoqml_lib.search_space.preprocessing.rescaling.normalization.Normalization.__norm": rescaling_normalization_norm,
-        "autoqml_lib.search_space.preprocessing.encoding.EncoderChoice__choice": encoding_choice,
-        "autoqml_lib.search_space.preprocessing.encoding.one_hot.OneHotEncoder__max_categories": one_hot_max_categories,
-        "autoqml_lib.search_space.preprocessing.encoding.one_hot.OneHotEncoder__min_frequency": one_hot_min_frequency,
-        "autoqml_lib.search_space.data_cleaning.imputation.ImputationChoice__choice": "no-op",
-        "autoqml_lib.search_space.preprocessing.dim_reduction.DimReductionChoice__choice": dim_reduction,
-        "autoqml_lib.search_space.preprocessing.dim_reduction.autoencoder.Autoencoder__latent_dim": int(
-            n_reduction_dims
-        ),
-        "autoqml_lib.search_space.preprocessing.downsampling.DownsamplingChoice__choice": "no-op",
+        'autoqml_lib.search_space.regression.RegressionChoice__choice':
+            'qsvr',
+        'autoqml_lib.search_space.preprocessing.rescaling.RescalingChoice__choice':
+            'standard_scaling',  # 'min_max_scaling',
+        'autoqml_lib.search_space.preprocessing.encoding.EncoderChoice__choice':
+            'one-hot',
+        'autoqml_lib.search_space.preprocessing.encoding.one_hot.OneHotEncoder__max_categories':
+            17,
+        'autoqml_lib.search_space.preprocessing.encoding.one_hot.OneHotEncoder__min_frequency':
+            1,
+        'autoqml_lib.search_space.data_cleaning.imputation.ImputationChoice__choice':
+            'no-op',
+        'autoqml_lib.search_space.preprocessing.dim_reduction.DimReductionChoice__choice':
+            'autoencoder',  # 'pca' or 'autoencoder'
+        'autoqml_lib.search_space.preprocessing.dim_reduction.autoencoder.Autoencoder__latent_dim':
+            10,
+        # 'autoqml_lib.search_space.preprocessing.dim_reduction.pca.PCA__n_components':
+        #     10,
+        'autoqml_lib.search_space.preprocessing.downsampling.DownsamplingChoice__choice':
+            'no-op',
+        # 'autoqml_lib.search_space.classification.quantum.qsvc.QSVC__num_layers':
+        #     4,
+        # 'autoqml_lib.search_space.classification.quantum.qsvc.QSVC__num_qubits':
+        #     3,
+        # 'autoqml_lib.search_space.classification.quantum.qsvc.QSVC__C':
+        #     100,
     }
 
     params = dict()
-    # params["custom_config"] = custom_config
-    params["custom_config"] = None
+    params["custom_config"] = custom_config
     params["mode"] = mode
     params["time_budget_for_this_task"] = int(time_budget)
     params["problem_type"] = problem_type
