@@ -55,23 +55,16 @@ def execute_on_planqk(data=None, params=None, data_ref=None):
 
     job = client.start_execution(data=data, params=params, data_ref=data_ref)
 
-    MAX_TIME = 600
-    timeout = 25
+    timeout = 600
     sleep = 5
-    count = 0
-    while True:
-        try:
-            count += 1
-            client.wait_for_final_state(job.id, timeout=timeout, wait=sleep)
-            logger.info(f"{count:03d} | ...Found result!")
-            result = client.get_result(job.id)
-            break
-        except Exception as e:
-            logger.info(f"{e}")
-            if count >= int(MAX_TIME / timeout):
-                logger.info(f"{count:03d} | ...Found no result...stop.")
-                result = {"result": None}
-                break
+    try:
+        client.wait_for_final_state(job.id, timeout=timeout, wait=sleep)
+        logger.info(f"Found result!")
+        result = client.get_result(job.id)
+    except Exception as e:
+        logger.info(f"{e}")
+        logger.info(f"Found no result...stop.")
+        result = {"result": None}
     return result
 
 def execute_with_upload_data(
