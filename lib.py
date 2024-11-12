@@ -63,6 +63,7 @@ def execute_on_planqk(data=None, params=None, data_ref=None):
         result = client.get_result(job.id)
     except Exception as e:
         logger.info(f"{e}")
+        raise e
         logger.info(f"Found no result...stop.")
         result = {"result": None}
     return result
