@@ -4,7 +4,7 @@ from planqk.service.client import PlanqkServiceClient
 
 consumer_key = os.getenv("CONSUMER_KEY", "QuAIhJULrDtOu62HMsjCih8QL0oa")
 consumer_secret = os.getenv("CONSUMER_SECRET", "sBdY25szBMZ6IevOIq1J3FH39w0a")
-service_endpoint = os.getenv("SERVICE_ENDPOINT", "https://gateway.platform.planqk.de/418f4736-0ed9-46cf-8e09-68a16dada3bc/planqk-autoqml-8et4w/1.0.0")
+service_endpoint = os.getenv("SERVICE_ENDPOINT", "https://gateway.platform.planqk.de/418f4736-0ed9-46cf-8e09-68a16dada3bc/planqk-autoqml-rrue7/1.0.0")
 
 data = None
 data_ref = {
@@ -25,7 +25,7 @@ params = {
         "autoqml_lib.search_space.preprocessing.encoding.one_hot.OneHotEncoder__min_frequency": 0.5,
         "autoqml_lib.search_space.data_cleaning.imputation.ImputationChoice__choice": "no-op",
         "autoqml_lib.search_space.preprocessing.dim_reduction.DimReductionChoice__choice": "autoencoder",
-        "autoqml_lib.search_space.preprocessing.dim_reduction.autoencoder.Autoencoder__latent_dim": 5,
+        "autoqml_lib.search_space.preprocessing.dim_reduction.autoencoder.Autoencoder__latent_dim": 2,
         "autoqml_lib.search_space.preprocessing.downsampling.DownsamplingChoice__choice": "no-op"
     },
     "mode": "train",
