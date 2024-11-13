@@ -63,7 +63,7 @@ def get_config_elements():
         )
         n_reduction_dims = gr.Number(label="Reduction dims", value=5)
     with gr.Accordion("General", open=False):
-        time_budget = gr.Number(label="Time budget(seconds)", minimum=60, value=60)
+        time_budget = gr.Number(label="Time budget(seconds)", minimum=5, value=5)
         problem_type = gr.Dropdown(
             label="Problem type",
             choices=["classification", "regression"],
