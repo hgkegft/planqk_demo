@@ -25,7 +25,7 @@ params = {
         "autoqml_lib.search_space.preprocessing.encoding.one_hot.OneHotEncoder__min_frequency": 0.5,
         "autoqml_lib.search_space.data_cleaning.imputation.ImputationChoice__choice": "no-op",
         "autoqml_lib.search_space.preprocessing.dim_reduction.DimReductionChoice__choice": "autoencoder",
-        "autoqml_lib.search_space.preprocessing.dim_reduction.autoencoder.Autoencoder__latent_dim": 2,
+        "autoqml_lib.search_space.preprocessing.dim_reduction.autoencoder.Autoencoder__latent_dim": 3,
         "autoqml_lib.search_space.preprocessing.downsampling.DownsamplingChoice__choice": "no-op"
     },
     "mode": "train",

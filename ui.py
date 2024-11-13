@@ -61,7 +61,7 @@ def get_config_elements():
             choices=["pca", "autoencoder"],
             value="autoencoder",
         )
-        n_reduction_dims = gr.Number(label="Reduction dims", value=5)
+        n_reduction_dims = gr.Number(label="Reduction dims", minimum=3, value=3)
     with gr.Accordion("General", open=False):
         time_budget = gr.Number(label="Time budget(seconds)", minimum=5, value=5)
         problem_type = gr.Dropdown(
