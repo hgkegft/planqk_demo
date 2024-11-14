@@ -50,10 +50,7 @@ def train_trigger(
     elif data_pool_reference is not None:
         return execute_with_reference_data(data_pool_reference, params)
     elif data_file is not None:
-        file_path = data_file.name
-        with open(file_path) as f:
-            data = json.load(f)
-        return execute_with_upload_data(data, params)
+        return execute_with_upload_data(data_file, params)
 
 
 def create_train_data_and_params(

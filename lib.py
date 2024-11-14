@@ -4,17 +4,13 @@ import json
 from loguru import logger
 from planqk.service.client import PlanqkServiceClient
 
-
 ref_datasets = dict()
-ref_datasets["Zeppelin"] = {
-    "dataPoolId": "b9db3d59-164f-4ae4-a42e-e4f4f331cf33",
-    "dataSourceDescriptorId": "0772df64-ecac-462d-9967-62a4816de2ae",
-    "fileId": "e540e51c-561c-4628-af37-45bb88ab2abe"
-}
+ref_datasets["Zeppelin"] = {"dataPoolId": "95b5dd46-8188-4e3b-8fa3-cc6e2289d596",
+                            "dataSourceDescriptorId": "4dbffd52-519c-47cf-a4ed-330ef17f301a",
+                            "fileId": "9ebc4d35-c9ab-4741-9a7d-b56894d6d099"}
 ref_datasets["KEB"] = None
 ref_datasets["IAV"] = None
 ref_datasets["Trumpf"] = None
-
 
 ref_identifier = []
 for key, value in ref_datasets.items():
@@ -22,7 +18,6 @@ for key, value in ref_datasets.items():
         ref_identifier.append(key)
     else:
         ref_identifier.append(f"{key} - Not available.")
-
 
 consumer_key = os.getenv("CONSUMER_KEY", None)
 consumer_secret = os.getenv("CONSUMER_SECRET", None)
@@ -68,6 +63,7 @@ def execute_on_planqk(data=None, params=None, data_ref=None):
         logger.info(f"Found no result...stop.")
         result = {"result": None}
     return result
+
 
 def execute_with_upload_data(
         data_file,
