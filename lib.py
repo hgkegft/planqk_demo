@@ -48,7 +48,9 @@ def upload_json_file(file):
 
 
 def execute_on_planqk(data=None, params=None, data_ref=None):
+    logger.info(data)
     logger.info(params)
+    logger.info(data_ref)
 
     client = PlanqkServiceClient(service_endpoint, consumer_key, consumer_secret)
     logger.info("Starting execution of the service...")
