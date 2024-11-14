@@ -42,17 +42,19 @@ def upload_json_file(file):
     return file_path, data
 
 
-def execute_on_planqk(data=None, params=None, data_ref=None):
+def execute_on_planqk(data=None, params=None, data_ref=None, params_ref=None):
     logger.info(data)
     logger.info(params)
     logger.info(data_ref)
+    logger.info(params_ref)
 
     data_ref = json.loads(data_ref)
+    params_ref = json.loads(params_ref)
 
     client = PlanqkServiceClient(service_endpoint, consumer_key, consumer_secret)
     logger.info("Starting execution of the service...")
 
-    job = client.start_execution(data=data, params=params, data_ref=data_ref)
+    job = client.start_execution(data=data, params=params, data_ref=data_ref, params_ref=params_ref)
 
     timeout = 600
     sleep = 5

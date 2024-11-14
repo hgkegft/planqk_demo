@@ -84,9 +84,9 @@ def get_config_elements():
             problem_type)
 
 
-def handle_dataset_reference():
-    with gr.Tab("Reference data"):
-        data_reference = gr.Textbox(label="Reference data pool")
+def handle_dataset_reference(identifier):
+    with gr.Tab(f"Reference {identifier}"):
+        data_reference = gr.Textbox(label=f"Reference data pool")
 
     return data_reference
 
@@ -185,8 +185,8 @@ def prediction_ui(result_json_box_train):
 
         with gr.Row():
             with gr.Column():
-                data_ref = handle_dataset_reference()
-                params_ref = handle_dataset_reference()
+                data_ref = handle_dataset_reference(identifier="data")
+                params_ref = handle_dataset_reference(identifier="params")
             with gr.Column():
                 ...
 
