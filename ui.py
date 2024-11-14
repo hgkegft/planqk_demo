@@ -172,14 +172,14 @@ def training_ui():
 
 def prediction_ui(result_json_box_train):
     with gr.Tab("Prediction"):
-        # with gr.Accordion("Result data", open=False):
-        #     result_json_box_train_output = gr.JSON()
-        #     gr.on(
-        #         [result_json_box_train.change],
-        #         lambda value: value,
-        #         inputs=[result_json_box_train],
-        #         outputs=[result_json_box_train_output],
-        #     )
+        with gr.Accordion("Result data", open=False):
+            result_json_box_train_output = gr.JSON()
+            gr.on(
+                [result_json_box_train.change],
+                lambda value: value,
+                inputs=[result_json_box_train],
+                outputs=[result_json_box_train_output],
+            )
 
         gr.Markdown(value="Specify data")
 
