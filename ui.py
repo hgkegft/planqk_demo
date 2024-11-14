@@ -86,14 +86,9 @@ def get_config_elements():
 
 def handle_dataset_reference():
     with gr.Tab("Reference data"):
-        dataset_reference = gr.Dropdown(
-            label="Reference Datasets",
-            choices=ref_identifier,
-            value=None
-        )
-        data_pool_reference = gr.Textbox(label="Reference data pool")
+        data_reference = gr.Textbox(label="Reference data pool")
 
-    return dataset_reference, data_pool_reference
+    return data_reference
 
 
 def handle_data_upload():
@@ -130,8 +125,7 @@ def training_ui():
             with gr.Column():
                 config_elements = get_config_elements()
             with gr.Column():
-                dataset_reference, data_pool_reference = handle_dataset_reference()
-                train_data_file, upload_button = handle_data_upload()
+                data_reference = handle_dataset_reference()
 
         with gr.Row():
             with gr.Column():
@@ -155,9 +149,7 @@ def training_ui():
             inputs=[
                 *config_elements,
                 mode,
-                train_data_file,
-                dataset_reference,
-                data_pool_reference,
+                data_reference,
             ],
             outputs=[result_json_box_train],
             api_name="train",
@@ -168,9 +160,7 @@ def training_ui():
             inputs=[
                 *config_elements,
                 mode,
-                train_data_file,
-                dataset_reference,
-                data_pool_reference,
+                data_reference,
             ],
             outputs=[
                 send_params_json_box,
@@ -195,18 +185,9 @@ def prediction_ui(result_json_box_train):
 
         with gr.Row():
             with gr.Column():
-                predict_data_file = gr.File()
-                upload_button = gr.UploadButton(
-                    "Click to upload a file",
-                    file_types=["text"],
-                    file_count="single",
-                )
+                data_reference = handle_dataset_reference()
                 with gr.Accordion("Inspect Data", open=False):
                     data_json_box = gr.JSON()
-
-                upload_button.upload(
-                    upload_json_file, upload_button, [predict_data_file, data_json_box]
-                )
             with gr.Column():
                 ...
 
@@ -232,7 +213,7 @@ def prediction_ui(result_json_box_train):
                 inputs=[
                     result_json_box_train_output,
                     mode,
-                    predict_data_file,
+                    data_reference,
                 ],
                 outputs=[result_json_box_predict],
                 api_name="predict",
@@ -243,7 +224,7 @@ def prediction_ui(result_json_box_train):
                 inputs=[
                     result_json_box_train_output,
                     mode,
-                    predict_data_file,
+                    data_reference,
                 ],
                 outputs=[
                     send_params_json_box,

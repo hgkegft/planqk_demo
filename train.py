@@ -17,9 +17,7 @@ def train_trigger(
         time_budget,
         problem_type,
         mode,
-        data_file=None,
-        data_ref_identifier=None,
-        data_pool_reference=None,
+        data_ref=None,
 ):
     custom_config = {
         "autoqml_lib.search_space.regression.RegressionChoice__choice": regression_choice,
@@ -44,13 +42,7 @@ def train_trigger(
     params["time_budget_for_this_task"] = int(time_budget)
     params["problem_type"] = problem_type
 
-    if data_ref_identifier is not None:
-        data_ref = ref_datasets[data_ref_identifier]
-        return execute_with_reference_data(data_ref, params)
-    elif data_pool_reference is not None:
-        return execute_with_reference_data(data_pool_reference, params)
-    elif data_file is not None:
-        return execute_with_upload_data(data_file, params)
+    return execute_with_reference_data(data_ref, params)
 
 
 def create_train_data_and_params(
@@ -67,9 +59,7 @@ def create_train_data_and_params(
         time_budget,
         problem_type,
         mode,
-        data_file=None,
-        data_ref_identifier=None,
-        data_pool_reference=None,
+        data_ref=None,
 ):
     custom_config = {
         "autoqml_lib.search_space.regression.RegressionChoice__choice": regression_choice,
@@ -94,15 +84,6 @@ def create_train_data_and_params(
     params["time_budget_for_this_task"] = int(time_budget)
     params["problem_type"] = problem_type
 
-    if data_ref_identifier is not None:
-        data = ref_datasets[data_ref_identifier]
-    elif data_pool_reference is not None:
-        data = data_pool_reference
-    elif data_file is not None:
-        file_path = data_file.name
-        with open(file_path) as f:
-            data = json.load(f)
-    else:
-        data = dict()
+    data = data_ref
 
     return params, data
