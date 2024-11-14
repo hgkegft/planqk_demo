@@ -125,7 +125,7 @@ def training_ui():
             with gr.Column():
                 config_elements = get_config_elements()
             with gr.Column():
-                data_ref = handle_dataset_reference()
+                data_ref = handle_dataset_reference(identifier="data")
 
         with gr.Row():
             with gr.Column():

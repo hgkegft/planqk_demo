@@ -77,7 +77,7 @@ def execute_with_upload_data(
     with open(file_path) as f:
         data = json.load(f)
 
-    result = execute_on_planqk(data, params, data_ref=None)
+    result = execute_on_planqk(data, params, data_ref=None, params_ref=None)
 
     return result
 
