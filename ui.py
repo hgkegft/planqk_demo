@@ -1,9 +1,7 @@
 import gradio as gr
-import numpy as np
 
 from lib import (
     upload_json_file,
-    ref_identifier
 )
 from predict import create_predict_data_and_params, predict_trigger
 from train import train_trigger, create_train_data_and_params
@@ -92,20 +90,21 @@ def handle_dataset_reference(identifier):
 
 
 def handle_data_upload():
-    with gr.Tab("Upload data"):
-        train_data_file = gr.File()
-        upload_button = gr.UploadButton(
-            "Click to upload a file",
-            file_types=["text"],
-            file_count="single",
-        )
-        with gr.Accordion("Inspect Data", open=False):
+    upload_button = gr.UploadButton(
+        "Click to upload a file",
+        file_types=["text"],
+        file_count="single",
+    )
+    with gr.Accordion("Upload info", open=False):
+        data_file = gr.File()
+        file_reference = gr.JSON()
+        with gr.Accordion("Inspect uploaded data", open=False):
             data_json_box = gr.JSON()
 
-        upload_button.upload(
-            upload_json_file, upload_button, [train_data_file, data_json_box]
-        )
-    return train_data_file, upload_button
+    upload_button.upload(
+        upload_json_file, upload_button, [data_file, data_json_box, file_reference]
+    )
+    return data_file, data_json_box, file_reference
 
 
 def get_inspect_block():
@@ -125,7 +124,8 @@ def training_ui():
             with gr.Column():
                 config_elements = get_config_elements()
             with gr.Column():
-                data_ref = handle_dataset_reference(identifier="data")
+                with gr.Accordion("Data", open=False):
+                    data_file, data_json_box, file_reference = handle_data_upload()
 
         with gr.Row():
             with gr.Column():
@@ -149,7 +149,7 @@ def training_ui():
             inputs=[
                 *config_elements,
                 mode,
-                data_ref,
+                file_reference,
             ],
             outputs=[result_json_box_train],
             api_name="train",
@@ -160,7 +160,7 @@ def training_ui():
             inputs=[
                 *config_elements,
                 mode,
-                data_ref,
+                file_reference,
             ],
             outputs=[
                 send_params_json_box,

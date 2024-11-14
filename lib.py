@@ -4,20 +4,7 @@ import json
 from loguru import logger
 from planqk.service.client import PlanqkServiceClient
 
-ref_datasets = dict()
-ref_datasets["Zeppelin"] = {"dataPoolId": "95b5dd46-8188-4e3b-8fa3-cc6e2289d596",
-                            "dataSourceDescriptorId": "4dbffd52-519c-47cf-a4ed-330ef17f301a",
-                            "fileId": "9ebc4d35-c9ab-4741-9a7d-b56894d6d099"}
-ref_datasets["KEB"] = None
-ref_datasets["IAV"] = None
-ref_datasets["Trumpf"] = None
-
-ref_identifier = []
-for key, value in ref_datasets.items():
-    if value is not None:
-        ref_identifier.append(key)
-    else:
-        ref_identifier.append(f"{key} - Not available.")
+from data_pools import create_data_pool, add_file_to_data_pool
 
 consumer_key = os.getenv("CONSUMER_KEY", None)
 consumer_secret = os.getenv("CONSUMER_SECRET", None)
@@ -39,22 +26,23 @@ def upload_json_file(file):
     with open(file_path) as f:
         data = json.load(f)
 
-    return file_path, data
+    api_key = "plqk_exOpA7jse3x3KfVLtcRsoKv94gucB8ExWxGnbCUfSI"
+    data_pool_name = "autoqml_demo_data"
+
+    data_pool_id = create_data_pool(api_key, data_pool_name)
+    file_reference = add_file_to_data_pool(data_pool_id, api_key, filename, data)
+
+    return file_path, data, file_reference
 
 
-def execute_on_planqk(data=None, params=None, data_ref=None, params_ref=None):
+def execute_on_planqk(data, params):
     logger.info(data)
     logger.info(params)
-    logger.info(data_ref)
-    logger.info(params_ref)
-
-    data_ref = json.loads(data_ref)
-    params_ref = json.loads(params_ref)
 
     client = PlanqkServiceClient(service_endpoint, consumer_key, consumer_secret)
     logger.info("Starting execution of the service...")
 
-    job = client.start_execution(data=data, params=params, data_ref=data_ref, params_ref=params_ref)
+    job = client.start_execution(data=data, params=params)
 
     timeout = 600
     sleep = 5
@@ -67,23 +55,3 @@ def execute_on_planqk(data=None, params=None, data_ref=None, params_ref=None):
         logger.info(f"Found no result...stop.")
         result = {"result": None}
     return result
-
-
-def execute_with_upload_data(
-        data_file,
-        params
-):
-    file_path = data_file.name
-    with open(file_path) as f:
-        data = json.load(f)
-
-    result = execute_on_planqk(data, params, data_ref=None, params_ref=None)
-
-    return result
-
-
-def execute_with_reference_data(
-        data_ref,
-        params_ref
-):
-    return execute_on_planqk(data=None, params=None, data_ref=data_ref, params_ref=params_ref)

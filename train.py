@@ -1,6 +1,6 @@
 import json
 
-from lib import ref_datasets, execute_on_planqk, execute_with_reference_data, execute_with_upload_data
+from lib import execute_on_planqk
 
 
 def train_trigger(
@@ -17,7 +17,7 @@ def train_trigger(
         time_budget,
         problem_type,
         mode,
-        data_ref=None,
+        data,
 ):
     custom_config = {
         "autoqml_lib.search_space.regression.RegressionChoice__choice": regression_choice,
@@ -42,7 +42,7 @@ def train_trigger(
     params["time_budget_for_this_task"] = int(time_budget)
     params["problem_type"] = problem_type
 
-    return execute_with_reference_data(data_ref, params)
+    return execute_on_planqk(data, params)
 
 
 def create_train_data_and_params(
@@ -59,7 +59,7 @@ def create_train_data_and_params(
         time_budget,
         problem_type,
         mode,
-        data_ref=None,
+        data,
 ):
     custom_config = {
         "autoqml_lib.search_space.regression.RegressionChoice__choice": regression_choice,
@@ -83,7 +83,5 @@ def create_train_data_and_params(
     params["mode"] = mode
     params["time_budget_for_this_task"] = int(time_budget)
     params["problem_type"] = problem_type
-
-    data = data_ref
 
     return params, data

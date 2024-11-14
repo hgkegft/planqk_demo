@@ -1,14 +1,12 @@
-import json
-
-from lib import execute_with_upload_data, execute_with_reference_data
+from lib import execute_on_planqk
 
 
 def predict_trigger(
-        data_ref,
-        params_ref,
+        data,
+        params,
 ):
 
-    return execute_with_reference_data(data_ref, params_ref)
+    return execute_on_planqk(data, params)
 
 
 def create_predict_data_and_params(
