@@ -13,11 +13,7 @@ def predict_trigger(
     params["mode"] = mode
     params["model_as_string_base64"] = result_json_box_train_output["result"]
 
-    file_path = data_file.name
-    with open(file_path) as f:
-        data = json.load(f)
-
-    return execute_with_upload_data(data, params)
+    return execute_with_upload_data(data_file, params)
 
 
 def create_predict_data_and_params(
