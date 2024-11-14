@@ -125,7 +125,7 @@ def training_ui():
             with gr.Column():
                 config_elements = get_config_elements()
             with gr.Column():
-                data_reference = handle_dataset_reference()
+                data_ref = handle_dataset_reference()
 
         with gr.Row():
             with gr.Column():
@@ -149,7 +149,7 @@ def training_ui():
             inputs=[
                 *config_elements,
                 mode,
-                data_reference,
+                data_ref,
             ],
             outputs=[result_json_box_train],
             api_name="train",
@@ -160,7 +160,7 @@ def training_ui():
             inputs=[
                 *config_elements,
                 mode,
-                data_reference,
+                data_ref,
             ],
             outputs=[
                 send_params_json_box,
@@ -172,22 +172,20 @@ def training_ui():
 
 def prediction_ui(result_json_box_train):
     with gr.Tab("Prediction"):
-        with gr.Accordion("Result data", open=False):
-            result_json_box_train_output = gr.JSON()
-            gr.on(
-                [result_json_box_train.change],
-                lambda value: value,
-                inputs=[result_json_box_train],
-                outputs=[result_json_box_train_output],
-            )
+        # with gr.Accordion("Result data", open=False):
+        #     result_json_box_train_output = gr.JSON()
+        #     gr.on(
+        #         [result_json_box_train.change],
+        #         lambda value: value,
+        #         inputs=[result_json_box_train],
+        #         outputs=[result_json_box_train_output],
+        #     )
 
         gr.Markdown(value="Specify data")
 
         with gr.Row():
             with gr.Column():
-                data_reference = handle_dataset_reference()
-                with gr.Accordion("Inspect Data", open=False):
-                    data_json_box = gr.JSON()
+                data_ref = handle_dataset_reference()
             with gr.Column():
                 ...
 
@@ -213,7 +211,7 @@ def prediction_ui(result_json_box_train):
                 inputs=[
                     result_json_box_train_output,
                     mode,
-                    data_reference,
+                    data_ref,
                 ],
                 outputs=[result_json_box_predict],
                 api_name="predict",
@@ -224,7 +222,7 @@ def prediction_ui(result_json_box_train):
                 inputs=[
                     result_json_box_train_output,
                     mode,
-                    data_reference,
+                    data_ref,
                 ],
                 outputs=[
                     send_params_json_box,
