@@ -186,6 +186,7 @@ def prediction_ui(result_json_box_train):
         with gr.Row():
             with gr.Column():
                 data_ref = handle_dataset_reference()
+                params_ref = handle_dataset_reference()
             with gr.Column():
                 ...
 
@@ -205,13 +206,11 @@ def prediction_ui(result_json_box_train):
             with gr.Accordion("Result", open=False):
                 result_json_box_predict = gr.JSON()
 
-            mode = gr.Text("predict", visible=False)
             predict_button.click(
                 predict_trigger,
                 inputs=[
-                    result_json_box_train_output,
-                    mode,
                     data_ref,
+                    params_ref,
                 ],
                 outputs=[result_json_box_predict],
                 api_name="predict",
@@ -220,9 +219,8 @@ def prediction_ui(result_json_box_train):
                 [predict_button.click],
                 create_predict_data_and_params,
                 inputs=[
-                    result_json_box_train_output,
-                    mode,
                     data_ref,
+                    params_ref,
                 ],
                 outputs=[
                     send_params_json_box,

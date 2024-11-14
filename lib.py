@@ -82,6 +82,6 @@ def execute_with_upload_data(
 
 def execute_with_reference_data(
         data_ref,
-        params
+        params_ref
 ):
-    return execute_on_planqk(data=None, params=params, data_ref=data_ref)
+    return execute_on_planqk(data=None, params=None, data_ref=data_ref, params_ref=params_ref)
