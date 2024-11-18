@@ -16,7 +16,6 @@ def train_trigger(
         n_reduction_dims,
         time_budget,
         problem_type,
-        mode,
         file_obj,
         data,
 ):
@@ -38,7 +37,7 @@ def train_trigger(
     }
 
     data["custom_config"] = custom_config
-    data["mode"] = mode
+    data["mode"] = "train"
     data["data_mode"] = "by_reference"
     data["time_budget_for_this_task"] = int(time_budget)
     data["problem_type"] = problem_type
@@ -59,7 +58,6 @@ def create_train_data(
         n_reduction_dims,
         time_budget,
         problem_type,
-        mode,
         data,
 ):
     custom_config = {
@@ -80,7 +78,7 @@ def create_train_data(
     }
 
     data["custom_config"] = custom_config
-    data["mode"] = mode
+    data["mode"] = "mode"
     data["data_mode"] = "by_reference"
     data["time_budget_for_this_task"] = int(time_budget)
     data["problem_type"] = problem_type

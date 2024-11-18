@@ -132,12 +132,10 @@ def training_ui():
             with gr.Accordion("Result", open=False):
                 result_json_box_train = gr.JSON()
 
-        mode = gr.Text("train", visible=False)
         train_button.click(
             train_trigger,
             inputs=[
                 *config_elements,
-                mode,
                 data_file,
                 data_json_box,
             ],
@@ -149,7 +147,6 @@ def training_ui():
             create_train_data,
             inputs=[
                 *config_elements,
-                mode,
                 data_json_box,
             ],
             outputs=[
