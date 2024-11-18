@@ -9,6 +9,7 @@ from data_pools import create_data_pool, add_file_to_data_pool
 consumer_key = os.getenv("CONSUMER_KEY", None)
 consumer_secret = os.getenv("CONSUMER_SECRET", None)
 service_endpoint = os.getenv("SERVICE_ENDPOINT", None)
+planqk_api_key = os.getenv("PLANQK_API_KEY", None)
 
 
 def upload_json_file(file):
@@ -26,23 +27,22 @@ def upload_json_file(file):
     with open(file_path) as f:
         data = json.load(f)
 
-    api_key = "plqk_exOpA7jse3x3KfVLtcRsoKv94gucB8ExWxGnbCUfSI"
-    data_pool_name = "autoqml_demo_data"
-
-    data_pool_id = create_data_pool(api_key, data_pool_name)
-    file_reference = add_file_to_data_pool(data_pool_id, api_key, filename, data)
-
-    return file_path, data, file_reference
+    return file_path, data
 
 
-def execute_on_planqk(data, params):
+def execute_on_planqk(data, filename):
     logger.info(data)
-    logger.info(params)
+
+    data_pool_name = "autoqml_demo_data"
+    data_pool_id = create_data_pool(planqk_api_key, data_pool_name)
+    file_reference = add_file_to_data_pool(data_pool_id, planqk_api_key, filename, data)
+
+    logger.info(f"File reference: {file_reference}")
 
     client = PlanqkServiceClient(service_endpoint, consumer_key, consumer_secret)
     logger.info("Starting execution of the service...")
 
-    job = client.start_execution(data=data, params=params)
+    job = client.start_execution(data_ref=file_reference)
 
     timeout = 600
     sleep = 5

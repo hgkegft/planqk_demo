@@ -17,6 +17,7 @@ def train_trigger(
         time_budget,
         problem_type,
         mode,
+        file_obj,
         data,
 ):
     custom_config = {
@@ -36,16 +37,16 @@ def train_trigger(
         "autoqml_lib.search_space.preprocessing.downsampling.DownsamplingChoice__choice": "no-op",
     }
 
-    params = dict()
-    params["custom_config"] = custom_config
-    params["mode"] = mode
-    params["time_budget_for_this_task"] = int(time_budget)
-    params["problem_type"] = problem_type
+    data["custom_config"] = custom_config
+    data["mode"] = mode
+    data["data_mode"] = "by_reference"
+    data["time_budget_for_this_task"] = int(time_budget)
+    data["problem_type"] = problem_type
 
-    return execute_on_planqk(data, params)
+    return execute_on_planqk(data, file_obj.name)
 
 
-def create_train_data_and_params(
+def create_train_data(
         regression_choice,
         classification_choice,
         rescaling_choice,
@@ -78,10 +79,10 @@ def create_train_data_and_params(
         "autoqml_lib.search_space.preprocessing.downsampling.DownsamplingChoice__choice": "no-op",
     }
 
-    params = dict()
-    params["custom_config"] = custom_config
-    params["mode"] = mode
-    params["time_budget_for_this_task"] = int(time_budget)
-    params["problem_type"] = problem_type
+    data["custom_config"] = custom_config
+    data["mode"] = mode
+    data["data_mode"] = "by_reference"
+    data["time_budget_for_this_task"] = int(time_budget)
+    data["problem_type"] = problem_type
 
-    return params, data
+    return data

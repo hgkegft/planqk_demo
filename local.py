@@ -12,8 +12,8 @@ with open("data/train_data.json") as f:
 with open("data/train_params.json") as f:
     params = json.load(f)
 
-X_train = np.asarray(data["X_train"])
-y_train = np.asarray(data["y_train"])
+X = np.asarray(data["X_train"])
+y = np.asarray(data["y_train"])
 
 custom_config = params["custom_config"]
 time_budget_for_this_task = params["time_budget_for_this_task"]
@@ -27,8 +27,8 @@ else:
     raise Exception("No valid problem_type.")
 
 cmd = AutoQMLFitCommand(
-    X_train,
-    y_train,
+    X,
+    y,
     timedelta(seconds=time_budget_for_this_task),
     configuration=custom_config
 )

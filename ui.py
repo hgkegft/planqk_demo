@@ -1,10 +1,8 @@
 import gradio as gr
 
-from lib import (
-    upload_json_file,
-)
-from predict import create_predict_data_and_params, predict_trigger
-from train import train_trigger, create_train_data_and_params
+from lib import upload_json_file
+from predict import create_predict_data, predict_trigger
+from train import train_trigger, create_train_data
 
 
 def get_config_elements():
@@ -82,12 +80,6 @@ def get_config_elements():
             problem_type)
 
 
-def handle_dataset_reference(identifier):
-    with gr.Tab(f"Reference {identifier}"):
-        data_reference = gr.Textbox(label=f"Reference data pool")
-
-    return data_reference
-
 
 def handle_data_upload():
     upload_button = gr.UploadButton(
@@ -95,27 +87,24 @@ def handle_data_upload():
         file_types=["text"],
         file_count="single",
     )
-    with gr.Accordion("Upload info", open=False):
+    with gr.Accordion("Upload info", open=True):
         data_file = gr.File()
-        file_reference = gr.JSON()
         with gr.Accordion("Inspect uploaded data", open=False):
             data_json_box = gr.JSON()
 
     upload_button.upload(
-        upload_json_file, upload_button, [data_file, data_json_box, file_reference]
+        upload_json_file, upload_button, [data_file, data_json_box]
     )
-    return data_file, data_json_box, file_reference
+    return data_file, data_json_box
 
 
 def get_inspect_block():
     with gr.Accordion("Inspect data", open=False):
         with gr.Row():
             gr.Markdown("Data", scale=3)
-            gr.Markdown("Params", scale=4)
         with gr.Row():
             send_data_json_box = gr.JSON(scale=3)
-            send_params_json_box = gr.JSON(scale=4)
-    return send_data_json_box, send_params_json_box
+    return send_data_json_box
 
 
 def training_ui():
@@ -124,8 +113,8 @@ def training_ui():
             with gr.Column():
                 config_elements = get_config_elements()
             with gr.Column():
-                with gr.Accordion("Data", open=False):
-                    data_file, data_json_box, file_reference = handle_data_upload()
+                with gr.Accordion("Data", open=True):
+                    data_file, data_json_box = handle_data_upload()
 
         with gr.Row():
             with gr.Column():
@@ -137,7 +126,7 @@ def training_ui():
             with gr.Column():
                 ...
 
-        send_data_json_box, send_params_json_box = get_inspect_block()
+        send_data_json_box = get_inspect_block()
 
         with gr.Column():
             with gr.Accordion("Result", open=False):
@@ -149,21 +138,21 @@ def training_ui():
             inputs=[
                 *config_elements,
                 mode,
-                file_reference,
+                data_file,
+                data_json_box,
             ],
             outputs=[result_json_box_train],
             api_name="train",
         )
         gr.on(
             [train_button.click],
-            create_train_data_and_params,
+            create_train_data,
             inputs=[
                 *config_elements,
                 mode,
-                file_reference,
+                data_json_box,
             ],
             outputs=[
-                send_params_json_box,
                 send_data_json_box,
             ],
         )
@@ -185,13 +174,13 @@ def prediction_ui(result_json_box_train):
 
         with gr.Row():
             with gr.Column():
-                data_ref = handle_dataset_reference(identifier="data")
-                params_ref = handle_dataset_reference(identifier="params")
+                ...
             with gr.Column():
                 ...
 
         with gr.Row():
             with gr.Column():
+                data_file, data_json_box = handle_data_upload()
                 predict_button = gr.Button(value="Predict")
             with gr.Column():
                 ...
@@ -200,7 +189,7 @@ def prediction_ui(result_json_box_train):
             with gr.Column():
                 ...
 
-        send_data_json_box, send_params_json_box = get_inspect_block()
+        send_data_json_box = get_inspect_block()
 
         with gr.Column():
             with gr.Accordion("Result", open=False):
@@ -209,21 +198,20 @@ def prediction_ui(result_json_box_train):
             predict_button.click(
                 predict_trigger,
                 inputs=[
-                    data_ref,
-                    params_ref,
+                    data_file,
+                    data_json_box,
+                    result_json_box_train_output
                 ],
                 outputs=[result_json_box_predict],
                 api_name="predict",
             )
             gr.on(
                 [predict_button.click],
-                create_predict_data_and_params,
+                create_predict_data,
                 inputs=[
-                    data_ref,
-                    params_ref,
+                    result_json_box_predict,
                 ],
                 outputs=[
-                    send_params_json_box,
                     send_data_json_box,
                 ],
             )

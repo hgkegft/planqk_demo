@@ -1,4 +1,6 @@
 import json
+import os
+
 import requests
 
 
@@ -82,11 +84,13 @@ def add_file_to_data_pool(data_pool_id, api_key, filename, data):
         'X-Auth-Token': api_key,
     }
 
-    with open(f'/tmp/{filename}', "w") as f:
+    tmp_path = os.path.join("/tmp", filename)
+
+    with open(tmp_path, "w") as f:
         json.dump(data, f)
 
     files = {
-        'file': (f"{filename}", open(f"/tmp/{filename}", 'rb'), 'application/json')
+        'file': (f"{filename}", open(tmp_path, 'rb'), 'application/json')
     }
 
     response = requests.post(url, headers=headers, files=files)
