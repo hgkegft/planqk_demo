@@ -44,7 +44,7 @@ def execute_on_planqk(data, filename):
 
     job = client.start_execution(data_ref=file_reference)
 
-    timeout = 600
+    timeout = None
     sleep = 5
     try:
         client.wait_for_final_state(job.id, timeout=timeout, wait=sleep)

@@ -11,12 +11,14 @@ def get_config_elements():
             label="Regression method",
             choices=["svr", "qsvr"],
             value="qsvr",
+            multiselect=True,
         )
     with gr.Accordion("Classification", open=False):
         classification_choice = gr.Dropdown(
             label="Classification method",
             choices=["qgpc", "qnn", "qsvc", "random_forest", "svc"],
             value="qsvc",
+            multiselect=True,
         )
     with gr.Accordion("Rescaling", open=False):
         rescaling_choice = gr.Dropdown(
@@ -25,9 +27,9 @@ def get_config_elements():
                 "standard_scaling",
                 "normalization",
                 "min_max_scaling",
-                "no-op",
             ],
             value="standard_scaling",
+            multiselect=True,
         )
         rescaling_min_max_feature_range = gr.Number(label="MinMax Feature Range", minimum=0.0, value=0.5, maximum=1.0)
         rescaling_normalization_norm = gr.Dropdown(
@@ -38,12 +40,14 @@ def get_config_elements():
                 "max",
             ],
             value="l1",
+            multiselect=True,
         )
     with gr.Accordion("Encoding", open=False):
         encoding_choice = gr.Dropdown(
             label="Encoding method",
-            choices=["categorical", "one-hot", "no-op"],
+            choices=["categorical", "one-hot"],
             value="one-hot",
+            multiselect=True,
         )
         one_hot_min_frequency = gr.Number(label="One-Hot Min Frequency", minimum=0.0, value=0.5, maximum=1.0)
         one_hot_max_categories = gr.Number(label="One-Hot Max categories", minimum=0.0, value=0.5, maximum=1.0)
@@ -56,6 +60,7 @@ def get_config_elements():
             label="Dimension reduction method",
             choices=["pca", "autoencoder"],
             value="autoencoder",
+            multiselect=True,
         )
         n_reduction_dims = gr.Number(label="Reduction dims", minimum=3, value=3)
     with gr.Accordion("General", open=False):
@@ -78,7 +83,6 @@ def get_config_elements():
             n_reduction_dims,
             time_budget,
             problem_type)
-
 
 
 def handle_data_upload():
@@ -206,7 +210,7 @@ def prediction_ui(result_json_box_train):
                 [predict_button.click],
                 create_predict_data,
                 inputs=[
-                    result_json_box_predict,
+                    data_json_box,
                 ],
                 outputs=[
                     send_data_json_box,

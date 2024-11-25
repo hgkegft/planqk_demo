@@ -16,7 +16,11 @@ X = np.asarray(data["X_train"])
 y = np.asarray(data["y_train"])
 
 custom_config = params["custom_config"]
-time_budget_for_this_task = params["time_budget_for_this_task"]
+custom_config["autoqml_lib.search_space.regression.RegressionChoice__choice"] = ["qsvr", "svr"]
+custom_config["autoqml_lib.search_space.preprocessing.encoding.EncoderChoice__choice"] = ["one-hot", "categorical"]
+custom_config["autoqml_lib.search_space.preprocessing.dim_reduction.DimReductionChoice__choice"] = ["pca"]
+
+time_budget_for_this_task = 60 # params["time_budget_for_this_task"]
 problem_type = params["problem_type"]
 
 if problem_type == "classification":
@@ -34,3 +38,5 @@ cmd = AutoQMLFitCommand(
 )
 
 auto_qml = auto_qml.fit(cmd)
+
+print(auto_qml.pipeline_)
