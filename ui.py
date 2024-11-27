@@ -8,7 +8,7 @@ from constants import *
 
 def get_config_elements():
     with gr.Accordion("General", open=False):
-        time_budget = gr.Number(label="Time budget(seconds)", minimum=5, value=5)
+        time_budget = gr.Number(label="Time budget(seconds)", minimum=60, value=60)
         problem_type = gr.Dropdown(
             label="Problem type",
             choices=["classification", "regression"],
@@ -74,7 +74,7 @@ def get_config_elements():
         dim_reduction_choice = gr.Dropdown(
             label="Dimension reduction method",
             choices=list(dim_reduction_dict.keys()),
-            value="no Dimension Reduction",
+            value="Autoencoder",
             multiselect=True,
         )
         n_reduction_dims = gr.Number(label="Reduction dims", minimum=3, value=3)
