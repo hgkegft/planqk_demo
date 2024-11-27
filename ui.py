@@ -3,32 +3,37 @@ import gradio as gr
 from lib import upload_json_file
 from predict import create_predict_data, predict_trigger
 from train import train_trigger, create_train_data
+from constants import *
 
 
 def get_config_elements():
+    with gr.Accordion("General", open=False):
+        time_budget = gr.Number(label="Time budget(seconds)", minimum=5, value=5)
+        problem_type = gr.Dropdown(
+            label="Problem type",
+            choices=["classification", "regression"],
+            value="regression",
+
+        )
     with gr.Accordion("Regression", open=False):
         regression_choice = gr.Dropdown(
             label="Regression method",
-            choices=["svr", "qsvr"],
-            value="qsvr",
+            choices=list(regression_dict.keys()),
+            value=list(regression_dict.keys()),
             multiselect=True,
         )
     with gr.Accordion("Classification", open=False):
         classification_choice = gr.Dropdown(
             label="Classification method",
-            choices=["qgpc", "qnn", "qsvc", "random_forest", "svc"],
-            value="qsvc",
+            choices=list(classification_dict.keys()),
+            value=list(classification_dict.keys()),
             multiselect=True,
         )
     with gr.Accordion("Rescaling", open=False):
         rescaling_choice = gr.Dropdown(
             label="Rescaling method",
-            choices=[
-                "standard_scaling",
-                "normalization",
-                "min_max_scaling",
-            ],
-            value="standard_scaling",
+            choices=list(rescaling_dict.keys()),
+            value="no Rescaling",
             multiselect=True,
         )
         rescaling_min_max_feature_range = gr.Number(label="MinMax Feature Range", minimum=0.0, value=0.5, maximum=1.0)
@@ -45,31 +50,34 @@ def get_config_elements():
     with gr.Accordion("Encoding", open=False):
         encoding_choice = gr.Dropdown(
             label="Encoding method",
-            choices=["categorical", "one-hot"],
-            value="one-hot",
+            choices=list(encoding_dict.keys()),
+            value="Categorical",
             multiselect=True,
         )
         one_hot_min_frequency = gr.Number(label="One-Hot Min Frequency", minimum=0.0, value=0.5, maximum=1.0)
         one_hot_max_categories = gr.Number(label="One-Hot Max categories", minimum=0.0, value=0.5, maximum=1.0)
-    with gr.Accordion("Rescaling", open=False):
-        ...
-    with gr.Accordion("Down sampling", open=False):
-        ...
+    with gr.Accordion("Imputation", open=False):
+        imputation_choice = gr.Dropdown(
+            label="Imputation method",
+            choices=list(imputation_dict.keys()),
+            value="no Imputation",
+            multiselect=True,
+        )
+    with gr.Accordion("Downsampling", open=False):
+        downsampling_choice = gr.Dropdown(
+            label="Downsampling method",
+            choices=list(downsampling_dict.keys()),
+            value="no Downsampling",
+            multiselect=True,
+        )
     with gr.Accordion("Dimension reduction", open=False):
-        dim_reduction = gr.Dropdown(
+        dim_reduction_choice = gr.Dropdown(
             label="Dimension reduction method",
-            choices=["pca", "autoencoder"],
-            value="autoencoder",
+            choices=list(dim_reduction_dict.keys()),
+            value="no Dimension Reduction",
             multiselect=True,
         )
         n_reduction_dims = gr.Number(label="Reduction dims", minimum=3, value=3)
-    with gr.Accordion("General", open=False):
-        time_budget = gr.Number(label="Time budget(seconds)", minimum=5, value=5)
-        problem_type = gr.Dropdown(
-            label="Problem type",
-            choices=["classification", "regression"],
-            value="regression",
-        )
 
     return (regression_choice,
             classification_choice,
@@ -77,9 +85,11 @@ def get_config_elements():
             rescaling_min_max_feature_range,
             rescaling_normalization_norm,
             encoding_choice,
+            imputation_choice,
+            downsampling_choice,
             one_hot_min_frequency,
             one_hot_max_categories,
-            dim_reduction,
+            dim_reduction_choice,
             n_reduction_dims,
             time_budget,
             problem_type)

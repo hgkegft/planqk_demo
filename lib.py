@@ -6,10 +6,10 @@ from planqk.service.client import PlanqkServiceClient
 
 from data_pools import create_data_pool, add_file_to_data_pool
 
-consumer_key = os.getenv("CONSUMER_KEY", None)
-consumer_secret = os.getenv("CONSUMER_SECRET", None)
-service_endpoint = os.getenv("SERVICE_ENDPOINT", None)
-planqk_api_key = os.getenv("PLANQK_API_KEY", None)
+consumer_key = os.getenv("CONSUMER_KEY", "QuAIhJULrDtOu62HMsjCih8QL0oa")
+consumer_secret = os.getenv("CONSUMER_SECRET", "sBdY25szBMZ6IevOIq1J3FH39w0a")
+service_endpoint = os.getenv("SERVICE_ENDPOINT", "https://gateway.platform.planqk.de/418f4736-0ed9-46cf-8e09-68a16dada3bc/planqk-autoqml-t6mnh/1.0.0")
+planqk_api_key = os.getenv("PLANQK_API_KEY", "plqk_QWfKGfnv1EXuETFeslp4mbB4cCQKCfAU5AANzXACJl")
 
 
 def upload_json_file(file):
