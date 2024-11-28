@@ -19,14 +19,14 @@ def get_config_elements():
         regression_choice = gr.Dropdown(
             label="Regression method",
             choices=list(regression_dict.keys()),
-            value=list(regression_dict.keys()),
+            value=["Gaussian Process Regressor", "QGPR: Quantum Gaussian Process Regressor"],
             multiselect=True,
         )
     with gr.Accordion("Classification", open=False):
         classification_choice = gr.Dropdown(
             label="Classification method",
             choices=list(classification_dict.keys()),
-            value=list(classification_dict.keys()),
+            value=["Gaussian Process Classifier", "QGPC: Quantum Gaussian Process Classifier"],
             multiselect=True,
         )
     with gr.Accordion("Rescaling", open=False):
