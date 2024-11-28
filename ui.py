@@ -19,7 +19,7 @@ def get_config_elements():
         regression_choice = gr.Dropdown(
             label="Regression method",
             choices=list(regression_dict.keys()),
-            value=["SVR"],
+            value=["SVR", "QSVR: Quantum Support Vector Regressor"],
             multiselect=True,
         )
     with gr.Accordion("Classification", open=False):
