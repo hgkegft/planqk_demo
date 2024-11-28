@@ -19,7 +19,7 @@ def get_config_elements():
         regression_choice = gr.Dropdown(
             label="Regression method",
             choices=list(regression_dict.keys()),
-            value=["Gaussian Process Regressor", "QGPR: Quantum Gaussian Process Regressor"],
+            value=["SVR"],
             multiselect=True,
         )
     with gr.Accordion("Classification", open=False):
@@ -33,7 +33,7 @@ def get_config_elements():
         rescaling_choice = gr.Dropdown(
             label="Rescaling method",
             choices=list(rescaling_dict.keys()),
-            value="no Rescaling",
+            value="Standard Scaling",
             multiselect=True,
         )
         rescaling_min_max_feature_range = gr.Number(label="MinMax Feature Range", minimum=0.0, value=0.5, maximum=1.0)
@@ -51,11 +51,11 @@ def get_config_elements():
         encoding_choice = gr.Dropdown(
             label="Encoding method",
             choices=list(encoding_dict.keys()),
-            value="Categorical",
+            value="One-Hot Encoding",
             multiselect=True,
         )
-        one_hot_min_frequency = gr.Number(label="One-Hot Min Frequency", minimum=0.0, value=0.5, maximum=1.0)
-        one_hot_max_categories = gr.Number(label="One-Hot Max categories", minimum=0.0, value=0.5, maximum=1.0)
+        one_hot_min_frequency = gr.Number(label="One-Hot Min Frequency", minimum=1, value=1, maximum=1000)
+        one_hot_max_categories = gr.Number(label="One-Hot Max categories", minimum=1, value=17, maximum=1000)
     with gr.Accordion("Imputation", open=False):
         imputation_choice = gr.Dropdown(
             label="Imputation method",
@@ -74,7 +74,7 @@ def get_config_elements():
         dim_reduction_choice = gr.Dropdown(
             label="Dimension reduction method",
             choices=list(dim_reduction_dict.keys()),
-            value="Autoencoder",
+            value="PCA",
             multiselect=True,
         )
         n_reduction_dims = gr.Number(label="Reduction dims", minimum=2, value=2)
