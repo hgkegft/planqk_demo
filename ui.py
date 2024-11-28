@@ -54,8 +54,8 @@ def get_config_elements():
             value="One-Hot Encoding",
             multiselect=True,
         )
-        one_hot_min_frequency = gr.Number(label="One-Hot Min Frequency", minimum=1, value=1, maximum=1000)
-        one_hot_max_categories = gr.Number(label="One-Hot Max categories", minimum=1, value=17, maximum=1000)
+        one_hot_min_frequency = gr.Number(label="One-Hot Min Frequency", minimum=0.5, value=0.5, maximum=0.5)
+        one_hot_max_categories = gr.Number(label="One-Hot Max categories", minimum=0.5, value=0.5, maximum=0.5)
     with gr.Accordion("Imputation", open=False):
         imputation_choice = gr.Dropdown(
             label="Imputation method",
