@@ -77,7 +77,7 @@ def get_config_elements():
             value="Autoencoder",
             multiselect=True,
         )
-        n_reduction_dims = gr.Number(label="Reduction dims", minimum=3, value=3)
+        n_reduction_dims = gr.Number(label="Reduction dims", minimum=2, value=2)
 
     return (regression_choice,
             classification_choice,
